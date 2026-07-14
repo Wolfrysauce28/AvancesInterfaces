@@ -1,0 +1,507 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Prototipo CeroMerma</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        brand: {
+                            50: '#ecfdf5',
+                            100: '#d1fae5',
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857',
+                        },
+                        urgent: '#ef4444',
+                        warning: '#f59e0b',
+                        bglight: '#f3f4f6'
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 6px rgba(0,0,0,0.05)',
+                        'nav': '0 -4px 20px rgba(0,0,0,0.06)'
+                    },
+                    borderRadius: {
+                        'custom': '1rem'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; color: #111827; overflow-x: hidden; }
+        
+        /* Gestión de Vistas */
+        .view-section { display: none; opacity: 0; transition: opacity 0.3s ease; }
+        .view-section.active { display: block; opacity: 1; animation: slideUp 0.4s ease forwards; }
+        
+        @keyframes slideUp { 
+            from { opacity: 0; transform: translateY(15px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+        
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        .btn-primary { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+        .btn-primary:hover { background: linear-gradient(135deg, #059669 0%, #047857 100%); }
+
+        /* Lógica de Espaciados Responsive por Vista usando Data Attributes */
+        
+        /* HOME */
+        body[data-view="home"] #app { padding-top: 135px; padding-bottom: 80px; }
+        @media (min-width: 768px) { body[data-view="home"] #app { padding-top: 100px; padding-bottom: 40px; } }
+
+        /* PRODUCT DETAIL */
+        body[data-view="product"] #app { padding-top: 0; padding-bottom: 100px; }
+        body[data-view="product"] #top-nav-bar { display: none; }
+        body[data-view="product"] #bottom-nav-bar { display: none !important; }
+        @media (min-width: 768px) { 
+            body[data-view="product"] #app { padding-top: 100px; padding-bottom: 40px; } 
+            body[data-view="product"] #top-nav-bar { display: block; }
+        }
+
+        /* ADMIN INVENTORY */
+        body[data-view="admin"] #app { padding-top: 80px; padding-bottom: 90px; }
+        body[data-view="admin"] #mobile-search-bar { display: none; }
+        @media (min-width: 768px) { body[data-view="admin"] #app { padding-top: 100px; padding-bottom: 40px; } }
+        
+        
+        /* Estilos personalizados para Modo Oscuro en Cliente */
+        .dark body, body.dark {
+            background-color: #111827 !important;
+            color: #f9fafb !important;
+        }
+        .dark nav, .dark .bg-white, nav.dark, .bg-white.dark {
+            background-color: #1f2937 !important;
+            border-color: #374151 !important;
+        }
+        .dark text-gray-900, .dark .text-gray-900 {
+            color: #f9fafb !important;
+        }
+        .dark .text-gray-500, .dark .text-gray-400 {
+            color: #9ca3af !important;
+        }
+        .dark .border-gray-100, .dark .border-gray-200 {
+            border-color: #374151 !important;
+        }
+        .dark .bg-gray-50, .dark .bg-gray-100 {
+            background-color: #374151 !important;
+        }
+        .dark .bg-gray-50:hover {
+            background-color: #4b5563 !important;
+        }
+        .dark input {
+            background-color: #374151 !important;
+            color: #f9fafb !important;
+            border-color: #4b5563 !important;
+        }
+        .dark input::placeholder {
+            color: #9ca3af !important;
+        }
+
+        /* Utils */
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom, 16px); }
+    </style>
+</head>
+<body class="antialiased" data-view="home">
+
+    <!-- TOP NAVBAR -->
+    <nav id="top-nav-bar" class="bg-white shadow-sm fixed w-full top-0 z-50 transition-all duration-300">
+        <!-- Main Top Bar -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16 md:h-20">
+                
+                <!-- Brand & Location -->
+                <div class="flex items-center gap-4 md:gap-8">
+                    <!-- Logo -->
+                    <div class="flex-shrink-0 flex items-center cursor-pointer active:scale-95 transition" onclick="navigate('home')">
+                        <div class="w-9 h-9 md:w-11 md:h-11 bg-brand-500 rounded-custom flex items-center justify-center text-white text-lg md:text-xl shadow-soft md:mr-3">
+                            <i class="fa-solid fa-leaf"></i>
+                        </div>
+                        <h1 class="text-2xl font-extrabold tracking-tight hidden md:block text-gray-900">Cero<span class="text-brand-500">Merma</span></h1>
+                    </div>
+                    
+                    <!-- Location Selector (Mobile & Desktop) -->
+                    <div class="flex flex-col cursor-pointer hover:bg-gray-50 p-1.5 md:p-2 rounded-lg transition">
+                        <span class="hidden md:block text-[11px] text-gray-500 font-bold uppercase tracking-wider mb-0.5">Entregar en</span>
+                        <div class="flex items-center text-sm md:text-base font-bold text-gray-900 max-w-[160px] md:max-w-xs">
+                            <i class="fa-solid fa-location-dot text-urgent mr-2 text-base md:text-lg"></i>
+                            <span class="truncate">Av. Providencia 1234</span>
+                            <i class="fa-solid fa-chevron-down ml-2 text-gray-400 text-[10px] md:text-xs"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Desktop Search Bar -->
+                <div class="hidden md:block flex-1 max-w-2xl px-8">
+                    <div class="relative group">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <i class="fa-solid fa-magnifying-glass text-gray-400 group-focus-within:text-brand-600 transition-colors"></i>
+                        </div>
+                        <input type="text" class="block w-full pl-11 pr-4 py-3 border border-gray-200 rounded-custom bg-gray-50 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white focus:border-transparent text-sm font-medium transition-all shadow-inner" placeholder="Buscar restaurantes, panaderías, platos rescatados...">
+                    </div>
+                </div>
+
+                <!-- Right Actions -->
+                <div class="flex items-center gap-1 md:gap-4">
+                    <!-- Cart -->
+                    <button class="relative p-2 md:p-3 text-gray-600 hover:text-brand-600 transition active:scale-95 bg-gray-50 rounded-full md:bg-transparent">
+                        <i class="fa-solid fa-basket-shopping text-lg md:text-xl"></i>
+                        <span class="absolute top-0 right-0 md:top-1 md:right-1 inline-flex items-center justify-center w-5 h-5 text-[10px] font-bold text-white bg-urgent rounded-full border-2 border-white shadow-sm transform translate-x-1/4 -translate-y-1/4">2</span>
+                    </button>
+                    <!-- User / Exit (Mobile + Desktop) -->
+                    <button class="flex md:hidden p-2 text-gray-600 hover:text-red-500 transition active:scale-95 bg-gray-50 rounded-full" onclick="window.location.href='ceromerma-login.html'" aria-label="Salir">
+                        <i class="fa-solid fa-arrow-right-from-bracket text-lg"></i>
+                    </button>
+                    <!-- User Profile (Desktop) -->
+                    <button class="hidden md:flex items-center gap-3 p-1.5 pr-4 hover:bg-gray-50 rounded-full transition border border-gray-100 shadow-sm" onclick="window.location.href='ceromerma-login.html'">
+                        <img src="https://i.pravatar.cc/100?img=32" alt="Perfil" class="w-9 h-9 rounded-full border border-gray-200">
+                        <div class="flex flex-col items-start">
+                            <span class="text-xs font-bold text-gray-900 leading-tight">Juan Pérez</span>
+                            <span class="text-[10px] font-semibold text-red-500 leading-tight">Cerrar Sesión</span>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile Search Bar (Directly below header) -->
+        <div id="mobile-search-bar" class="md:hidden px-4 pb-3 bg-white border-b border-gray-100">
+            <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <i class="fa-solid fa-magnifying-glass text-gray-400"></i>
+                </div>
+                <input type="text" class="block w-full pl-10 pr-3 py-3 border border-gray-100 rounded-custom bg-gray-100 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-500 text-sm font-medium transition shadow-inner" placeholder="¿Qué vas a rescatar hoy?">
+            </div>
+        </div>
+    </nav>
+
+    <!-- MOBILE BOTTOM NAVIGATION -->
+    <div id="bottom-nav-bar" class="md:hidden fixed bottom-0 left-0 z-50 w-full bg-white border-t border-gray-100 shadow-nav flex justify-around items-center pt-2 pb-safe px-1 transition-transform">
+        <button onclick="navigate('home')" class="nav-tab flex flex-col items-center justify-center w-full py-2 text-brand-600">
+            <i class="fa-solid fa-house text-xl mb-1"></i>
+            <span class="text-[10px] font-bold">Inicio</span>
+        </button>
+        <button onclick="navigate('home')" class="nav-tab flex flex-col items-center justify-center w-full py-2 text-gray-400 hover:text-brand-600 transition-colors">
+            <i class="fa-solid fa-magnifying-glass text-xl mb-1"></i>
+            <span class="text-[10px] font-semibold">Buscar</span>
+        </button>
+        <button class="nav-tab flex flex-col items-center justify-center w-full py-2 text-gray-400 hover:text-brand-600 transition-colors relative">
+            <i class="fa-solid fa-receipt text-xl mb-1"></i>
+            <span class="text-[10px] font-semibold">Pedidos</span>
+            <div class="absolute top-1.5 right-6 w-2 h-2 bg-urgent rounded-full border border-white"></div>
+        </button>
+
+    </div>
+
+    <!-- MAIN APP CONTAINER -->
+    <div id="app" class="max-w-7xl mx-auto w-full transition-all duration-300">
+
+        <!-- VIEW: HOME DASHBOARD -->
+        <div id="view-home" class="view-section active px-4 sm:px-6 lg:px-8">
+            
+            <!-- Hero Banner -->
+            <div class="bg-gradient-to-r from-brand-600 to-brand-500 rounded-custom p-6 md:p-8 text-white shadow-soft mb-8 flex items-center justify-between relative overflow-hidden cursor-pointer hover:shadow-lg transition">
+                <div class="relative z-10 w-full md:w-2/3">
+                    <span class="inline-block bg-white/20 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide backdrop-blur-sm mb-3">Recién agregados</span>
+                    <h2 class="text-2xl md:text-3xl font-extrabold mb-2 leading-tight">Salva comida deliciosa, ahorra dinero</h2>
+                    <p class="text-brand-50 font-medium text-sm md:text-base max-w-sm">Descubre packs sorpresa con descuentos de hasta 70% en comercios cerca de ti.</p>
+                </div>
+                <!-- Decorative Icon -->
+                <i class="fa-solid fa-bag-shopping text-8xl md:text-[120px] absolute -right-6 -bottom-6 text-white/10 transform -rotate-12"></i>
+            </div>
+
+            <!-- Categories -->
+            <div class="mb-10">
+                <h3 class="text-lg md:text-xl font-extrabold text-gray-900 mb-4">Explorar Categorías</h3>
+                <div class="flex gap-4 overflow-x-auto hide-scrollbar pb-2 -mx-4 px-4 sm:mx-0 sm:px-0">
+                    <button class="flex flex-col items-center min-w-[85px] gap-3 group">
+                        <div class="w-16 h-16 md:w-20 md:h-20 rounded-[1rem] bg-white shadow-sm flex items-center justify-center text-3xl border-2 border-transparent group-hover:border-brand-500 transition-all">🥐</div>
+                        <span class="text-xs md:text-sm font-bold text-gray-700 group-hover:text-brand-600 transition">Panadería</span>
+                    </button>
+                    <button class="flex flex-col items-center min-w-[85px] gap-3 group">
+                        <div class="w-16 h-16 md:w-20 md:h-20 rounded-[1rem] bg-white shadow-sm flex items-center justify-center text-3xl border-2 border-transparent group-hover:border-brand-500 transition-all">🍕</div>
+                        <span class="text-xs md:text-sm font-bold text-gray-700 group-hover:text-brand-600 transition">Pizza</span>
+                    </button>
+                    <button class="flex flex-col items-center min-w-[85px] gap-3 group">
+                        <div class="w-16 h-16 md:w-20 md:h-20 rounded-[1rem] bg-white shadow-sm flex items-center justify-center text-3xl border-2 border-transparent group-hover:border-brand-500 transition-all">🥗</div>
+                        <span class="text-xs md:text-sm font-bold text-gray-700 group-hover:text-brand-600 transition">Saludable</span>
+                    </button>
+                    <button class="flex flex-col items-center min-w-[85px] gap-3 group">
+                        <div class="w-16 h-16 md:w-20 md:h-20 rounded-[1rem] bg-white shadow-sm flex items-center justify-center text-3xl border-2 border-transparent group-hover:border-brand-500 transition-all">🍱</div>
+                        <span class="text-xs md:text-sm font-bold text-gray-700 group-hover:text-brand-600 transition">Asiática</span>
+                    </button>
+                    <button class="flex flex-col items-center min-w-[85px] gap-3 group">
+                        <div class="w-16 h-16 md:w-20 md:h-20 rounded-[1rem] bg-white shadow-sm flex items-center justify-center text-3xl border-2 border-transparent group-hover:border-brand-500 transition-all">☕</div>
+                        <span class="text-xs md:text-sm font-bold text-gray-700 group-hover:text-brand-600 transition">Cafetería</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Urgent / Flash Sales -->
+            <div class="mb-8">
+                <div class="flex justify-between items-end mb-5">
+                    <div>
+                        <h3 class="text-lg md:text-xl font-extrabold text-gray-900 flex items-center">
+                            <i class="fa-solid fa-clock text-urgent mr-2"></i> Terminan Pronto
+                        </h3>
+                        <p class="text-sm text-gray-500 font-medium mt-1">Rescata antes de que cierre el local</p>
+                    </div>
+                    <a href="#" class="text-sm font-bold text-brand-600 bg-brand-50 px-3 py-1.5 rounded-lg hover:bg-brand-100 transition">Ver todo</a>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                    <!-- Item 1 -->
+                    <div class="bg-white rounded-[1rem] shadow-sm hover:shadow-md border border-gray-100 overflow-hidden cursor-pointer transition-all flex flex-col" onclick="navigate('product')">
+                        <div class="h-44 bg-gray-200 relative overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1509440159596-0249088772ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Panadería" class="w-full h-full object-cover hover:scale-105 transition duration-500">
+                            <!-- Overlay Tags -->
+                            <div class="absolute top-3 left-3 bg-urgent text-white text-xs font-bold px-2.5 py-1.5 rounded-lg flex items-center shadow-sm">
+                                <i class="fa-regular fa-clock mr-1.5"></i> Hoy 19:30 - 20:30
+                            </div>
+                            <div class="absolute top-3 right-3 bg-white/90 backdrop-blur-sm text-gray-900 text-xs font-bold px-2 py-1.5 rounded-lg shadow-sm flex items-center">
+                                <i class="fa-solid fa-star text-warning mr-1"></i> 4.8
+                            </div>
+                        </div>
+                        <div class="p-4 md:p-5 flex-1 flex flex-col justify-between">
+                            <div>
+                                <p class="text-[11px] text-gray-500 font-bold mb-1 uppercase tracking-widest">Panadería El Trigo</p>
+                                <h4 class="font-extrabold text-gray-900 text-lg mb-2 line-clamp-1">Pack Sorpresa Dulce</h4>
+                                <p class="text-sm text-gray-500 mb-3"><i class="fa-solid fa-person-walking mr-1 text-gray-400"></i> a 1.2 km de ti</p>
+                            </div>
+                            
+                            <div class="flex items-center justify-between mt-auto pt-3 border-t border-gray-50">
+                                <div>
+                                    <span class="text-gray-400 line-through text-xs font-semibold block mb-0.5">$15.00</span>
+                                    <span class="text-brand-600 font-extrabold text-xl md:text-2xl">$4.50</span>
+                                </div>
+                                <button class="btn-primary text-white w-10 h-10 md:w-11 md:h-11 rounded-[1rem] flex items-center justify-center shadow-soft hover:shadow-md transition active:scale-95">
+                                    <i class="fa-solid fa-plus text-lg"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Item 2 -->
+                    <div class="bg-white rounded-[1rem] shadow-sm hover:shadow-md border border-gray-100 overflow-hidden cursor-pointer transition-all flex flex-col" onclick="navigate('product')">
+                        <div class="h-44 bg-gray-200 relative overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1512152272829-e3139592d56f?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Comida Rápida" class="w-full h-full object-cover hover:scale-105 transition duration-500">
+                            <!-- Overlay Tags -->
+                            <div class="absolute top-3 left-3 bg-warning text-white text-xs font-bold px-2.5 py-1.5 rounded-lg flex items-center shadow-sm">
+                                <i class="fa-solid fa-fire mr-1.5"></i> Quedan 2 packs
+                            </div>
+                        </div>
+                        <div class="p-4 md:p-5 flex-1 flex flex-col justify-between">
+                            <div>
+                                <p class="text-[11px] text-gray-500 font-bold mb-1 uppercase tracking-widest">Burger House</p>
+                                <h4 class="font-extrabold text-gray-900 text-lg mb-2 line-clamp-1">Sobras Clásicas + Papas</h4>
+                                <p class="text-sm text-gray-500 mb-3"><i class="fa-solid fa-person-walking mr-1 text-gray-400"></i> a 2.5 km de ti</p>
+                            </div>
+                            
+                            <div class="flex items-center justify-between mt-auto pt-3 border-t border-gray-50">
+                                <div>
+                                    <span class="text-gray-400 line-through text-xs font-semibold block mb-0.5">$12.00</span>
+                                    <span class="text-brand-600 font-extrabold text-xl md:text-2xl">$6.00</span>
+                                </div>
+                                <button class="btn-primary text-white w-10 h-10 md:w-11 md:h-11 rounded-[1rem] flex items-center justify-center shadow-soft hover:shadow-md transition active:scale-95">
+                                    <i class="fa-solid fa-plus text-lg"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW: PRODUCT DETAIL -->
+        <div id="view-product" class="view-section px-0 md:px-6 lg:px-8 bg-white md:bg-transparent min-h-screen">
+            <div class="bg-white md:rounded-[1.5rem] md:shadow-sm md:border md:border-gray-100 overflow-hidden relative">
+                
+                <!-- Floating Nav (Mobile specific back button over image) -->
+                <button onclick="navigate('home')" class="md:hidden absolute top-4 left-4 w-10 h-10 bg-white/90 backdrop-blur-md rounded-full flex items-center justify-center text-gray-900 shadow-md z-20 active:scale-95">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+                <button class="md:hidden absolute top-4 right-4 w-10 h-10 bg-white/90 backdrop-blur-md rounded-full flex items-center justify-center text-gray-900 shadow-md z-20 active:scale-95">
+                    <i class="fa-regular fa-heart"></i>
+                </button>
+
+                <!-- Desktop Back Button -->
+                <div class="hidden md:flex p-4 items-center border-b border-gray-50">
+                    <button onclick="navigate('home')" class="text-gray-500 hover:text-brand-600 font-bold text-sm flex items-center transition">
+                        <i class="fa-solid fa-arrow-left mr-2"></i> Volver a resultados
+                    </button>
+                </div>
+
+                <!-- Product Grid (Desktop Split / Mobile Stacked) -->
+                <div class="md:flex">
+                    <!-- Image -->
+                    <div class="h-72 md:h-[500px] md:w-1/2 relative w-full">
+                        <img src="https://images.unsplash.com/photo-1509440159596-0249088772ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Pack Sorpresa" class="w-full h-full object-cover">
+                    </div>
+
+                    <!-- Details -->
+                    <div class="p-6 md:p-10 relative -mt-6 md:mt-0 bg-white rounded-t-[2rem] md:rounded-none md:w-1/2 flex flex-col">
+                        <div class="flex justify-between items-start mb-3">
+                            <div>
+                                <p class="text-[11px] text-gray-500 font-bold uppercase tracking-widest mb-1.5 flex items-center">
+                                    <i class="fa-solid fa-shop mr-1.5 text-gray-400"></i> Panadería El Trigo
+                                </p>
+                                <h2 class="text-2xl md:text-3xl font-extrabold text-gray-900 leading-tight">Pack Sorpresa de Bollería del Día</h2>
+                            </div>
+                        </div>
+                        
+                        <p class="text-gray-500 text-sm md:text-base mb-6 leading-relaxed">Rescata este delicioso pack con productos horneados del día. Puede incluir cruasanes, panes artesanales, donas o empanadas dulces. ¡Perfecto para compartir el desayuno o la once!</p>
+                        
+                        <!-- Info Cards -->
+                        <div class="grid grid-cols-2 gap-3 mb-6">
+                            <div class="bg-gray-50 p-3 rounded-xl border border-gray-100 flex items-start">
+                                <i class="fa-solid fa-star text-warning mt-0.5 mr-2"></i>
+                                <div>
+                                    <p class="text-sm font-bold text-gray-900">4.8 / 5.0</p>
+                                    <p class="text-[10px] text-gray-500 uppercase font-semibold">124 reseñas</p>
+                                </div>
+                            </div>
+                            <div class="bg-gray-50 p-3 rounded-xl border border-gray-100 flex items-start">
+                                <i class="fa-solid fa-leaf text-brand-500 mt-0.5 mr-2"></i>
+                                <div>
+                                    <p class="text-sm font-bold text-gray-900">-2.5 kg CO2e</p>
+                                    <p class="text-[10px] text-gray-500 uppercase font-semibold">Impacto evitado</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center p-4 bg-red-50 rounded-xl border border-red-100 mb-8 md:mb-auto">
+                            <i class="fa-solid fa-clock text-urgent text-2xl mr-4"></i>
+                            <div>
+                                <p class="text-urgent font-bold text-sm">Recogida Urgente Hoy</p>
+                                <p class="text-gray-700 text-sm font-medium">Acércate entre las 19:30 y 20:30 hrs</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Checkout Action Bottom Area -->
+                        <div class="fixed bottom-0 left-0 w-full bg-white border-t border-gray-100 p-4 shadow-[0_-10px_20px_rgba(0,0,0,0.05)] md:relative md:border-t md:border-gray-100 md:shadow-none md:p-0 md:pt-6 z-40 mt-auto">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-[11px] font-bold text-gray-500 mb-0.5 uppercase tracking-wide">Precio Original: <span class="line-through ml-1">$15.00</span></p>
+                                    <div class="flex items-center">
+                                        <span class="text-3xl md:text-4xl font-extrabold text-gray-900">$4.50</span>
+                                        <span class="ml-3 bg-brand-50 border border-brand-100 text-brand-600 text-xs font-bold px-2 py-1 rounded-lg">Ahorras 70%</span>
+                                    </div>
+                                </div>
+                                <button class="btn-primary text-white font-bold py-4 px-8 md:px-12 rounded-[1rem] shadow-soft active:scale-95 transition min-h-[52px] flex items-center justify-center text-lg">
+                                    Reservar Pack
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Sistema de enrutamiento simple por atributos de datos
+        function navigate(viewId) {
+            // Animación de salida/entrada en vistas
+            document.querySelectorAll('.view-section').forEach(el => {
+                el.classList.remove('active');
+            });
+            
+            // Activar nueva vista
+            const target = document.getElementById('view-' + viewId);
+            if(target) target.classList.add('active');
+            
+            // Actualizar atributo global para CSS routing (Paddings y Navs)
+            document.body.setAttribute('data-view', viewId);
+            
+            // Actualizar estado activo en Bottom Nav (Feedback visual)
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('text-brand-600');
+                tab.classList.add('text-gray-400');
+            });
+            if(viewId === 'home') {
+                document.querySelectorAll('.nav-tab')[0].classList.add('text-brand-600');
+                document.querySelectorAll('.nav-tab')[0].classList.remove('text-gray-400');
+            }
+            
+            // Scroll top suave
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Navegar automáticamente según query string al cargar la página
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const view = urlParams.get('view');
+            if (view && view !== 'admin') {
+                navigate(view);
+            } else {
+                navigate('home');
+            }
+        });
+    </script>
+
+    <!-- Botón Flotante para cambiar Tema (Modo Oscuro) -->
+    <div class="fixed bottom-6 right-6 z-[9999]">
+        <button id="theme-toggle" class="w-12 h-12 rounded-full bg-white dark:bg-gray-800 text-gray-800 dark:text-white shadow-lg flex items-center justify-center border border-gray-200 dark:border-gray-700 hover:scale-110 active:scale-95 transition-all" aria-label="Cambiar tema">
+            <i id="theme-toggle-icon" class="fa-solid fa-moon text-lg"></i>
+        </button>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const toggleBtn = document.getElementById('theme-toggle');
+            const toggleIcon = document.getElementById('theme-toggle-icon');
+            
+            // Check saved theme
+            if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+                document.body.classList.add('dark');
+                if (toggleIcon) {
+                    toggleIcon.classList.remove('fa-moon');
+                    toggleIcon.classList.add('fa-sun');
+                }
+            } else {
+                document.documentElement.classList.remove('dark');
+                document.body.classList.remove('dark');
+                if (toggleIcon) {
+                    toggleIcon.classList.remove('fa-sun');
+                    toggleIcon.classList.add('fa-moon');
+                }
+            }
+            
+            if (toggleBtn) {
+                toggleBtn.addEventListener('click', () => {
+                    if (document.documentElement.classList.contains('dark')) {
+                        document.documentElement.classList.remove('dark');
+                        document.body.classList.remove('dark');
+                        localStorage.setItem('theme', 'light');
+                        if (toggleIcon) {
+                            toggleIcon.classList.remove('fa-sun');
+                            toggleIcon.classList.add('fa-moon');
+                        }
+                    } else {
+                        document.documentElement.classList.add('dark');
+                        document.body.classList.add('dark');
+                        localStorage.setItem('theme', 'dark');
+                        if (toggleIcon) {
+                            toggleIcon.classList.remove('fa-moon');
+                            toggleIcon.classList.add('fa-sun');
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+    
+</body>
+</html>

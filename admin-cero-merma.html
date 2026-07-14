@@ -1,0 +1,325 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Prototipo CeroMerma</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        brand: {
+                            50: '#ecfdf5',
+                            100: '#d1fae5',
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857',
+                        },
+                        urgent: '#ef4444',
+                        warning: '#f59e0b',
+                        bglight: '#f3f4f6'
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 6px rgba(0,0,0,0.05)',
+                        'nav': '0 -4px 20px rgba(0,0,0,0.06)'
+                    },
+                    borderRadius: {
+                        'custom': '1rem'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; color: #111827; overflow-x: hidden; }
+        
+        /* Gestión de Vistas */
+        .view-section { display: none; opacity: 0; transition: opacity 0.3s ease; }
+        .view-section.active { display: block; opacity: 1; animation: slideUp 0.4s ease forwards; }
+        
+        @keyframes slideUp { 
+            from { opacity: 0; transform: translateY(15px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+        
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        .btn-primary { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+        .btn-primary:hover { background: linear-gradient(135deg, #059669 0%, #047857 100%); }
+
+        /* Lógica de Espaciados Responsive por Vista usando Data Attributes */
+        
+        /* HOME */
+        body[data-view="home"] #app { padding-top: 135px; padding-bottom: 80px; }
+        @media (min-width: 768px) { body[data-view="home"] #app { padding-top: 100px; padding-bottom: 40px; } }
+
+        /* PRODUCT DETAIL */
+        body[data-view="product"] #app { padding-top: 0; padding-bottom: 100px; }
+        body[data-view="product"] #top-nav-bar { display: none; }
+        body[data-view="product"] #bottom-nav-bar { display: none !important; }
+        @media (min-width: 768px) { 
+            body[data-view="product"] #app { padding-top: 100px; padding-bottom: 40px; } 
+            body[data-view="product"] #top-nav-bar { display: block; }
+        }
+
+        /* ADMIN INVENTORY */
+        body[data-view="admin"] #app { padding-top: 80px; padding-bottom: 90px; }
+        body[data-view="admin"] #mobile-search-bar { display: none; }
+        @media (min-width: 768px) { body[data-view="admin"] #app { padding-top: 100px; padding-bottom: 40px; } }
+        
+        
+        /* Estilos personalizados para Modo Oscuro en Administrador */
+        .dark body, body.dark {
+            background-color: #111827 !important;
+            color: #f9fafb !important;
+        }
+        .dark nav, .dark .bg-white, nav.dark, .bg-white.dark {
+            background-color: #1f2937 !important;
+            border-color: #374151 !important;
+        }
+        .dark text-gray-900, .dark .text-gray-900 {
+            color: #f9fafb !important;
+        }
+        .dark .text-gray-500, .dark .text-gray-400 {
+            color: #9ca3af !important;
+        }
+        .dark .border-gray-100, .dark .border-gray-200 {
+            border-color: #374151 !important;
+        }
+        .dark .bg-gray-50, .dark .bg-gray-100 {
+            background-color: #374151 !important;
+        }
+        .dark .bg-gray-50:hover {
+            background-color: #4b5563 !important;
+        }
+        .dark .bg-emerald-50 {
+            background-color: #064e3b !important;
+            color: #34d399 !important;
+        }
+        .dark .bg-brand-50 {
+            background-color: #064e3b !important;
+            color: #34d399 !important;
+        }
+        .dark .text-brand-600 {
+            color: #34d399 !important;
+        }
+
+        /* Utils */
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom, 16px); }
+    </style>
+</head>
+<body class="antialiased" data-view="home">
+
+    <!-- TOP NAVBAR -->
+    <nav id="top-nav-bar" class="bg-white shadow-sm fixed w-full top-0 z-50 transition-all duration-300">
+        <!-- Main Top Bar -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16 md:h-20">
+                
+                <!-- Brand & Info -->
+                <div class="flex items-center gap-4 md:gap-8">
+                    <!-- Logo -->
+                    <div class="flex-shrink-0 flex items-center cursor-pointer active:scale-95 transition" onclick="window.location.href='ceromerma-login.html'">
+                        <div class="w-9 h-9 md:w-11 md:h-11 bg-brand-500 rounded-custom flex items-center justify-center text-white text-lg md:text-xl shadow-soft md:mr-3">
+                            <i class="fa-solid fa-leaf"></i>
+                        </div>
+                        <h1 class="text-2xl font-extrabold tracking-tight hidden md:block text-gray-900">Cero<span class="text-brand-500">Merma</span></h1>
+                    </div>
+                    
+                    <span class="bg-emerald-50 text-emerald-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider hidden sm:inline-block">Modo Panel de Control</span>
+                </div>
+
+                <!-- Right Actions -->
+                <div class="flex items-center gap-1 md:gap-4">
+                    <!-- User Profile (Desktop) -->
+                    <button class="flex items-center gap-3 p-1.5 pr-4 hover:bg-gray-50 rounded-full transition border border-gray-100 shadow-sm" onclick="window.location.href='ceromerma-login.html'">
+                        <img src="https://i.pravatar.cc/100?img=33" alt="Perfil" class="w-9 h-9 rounded-full border border-gray-200">
+                        <div class="flex flex-col items-start">
+                            <span class="text-xs font-bold text-gray-900 leading-tight">Admin - El Trigo</span>
+                            <span class="text-[10px] font-semibold text-red-500 leading-tight">Cerrar Sesión</span>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- MAIN APP CONTAINER -->
+    <div id="app" class="max-w-7xl mx-auto w-full transition-all duration-300">
+
+        <!-- VIEW: ADMIN INVENTORY -->
+        <div id="view-admin" class="view-section active px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between mb-6 md:mb-8 bg-white p-4 md:p-6 rounded-[1.5rem] shadow-sm border border-gray-100">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center text-2xl">🥐</div>
+                    <div>
+                        <h2 class="text-xl md:text-2xl font-extrabold text-gray-900">Panel KDS</h2>
+                        <p class="text-brand-600 font-bold text-sm">Panadería El Trigo</p>
+                    </div>
+                </div>
+                <button onclick="window.location.href='ceromerma-login.html'" class="text-sm font-bold text-gray-500 hover:text-red-600 flex items-center bg-gray-50 py-2.5 px-4 rounded-xl transition">
+                    <i class="fa-solid fa-arrow-right-from-bracket mr-2"></i> <span>Cerrar Sesión</span>
+                </button>
+            </div>
+
+            <!-- Dashboard Stats -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-5 mb-8">
+                <div class="bg-white p-5 rounded-[1rem] border border-gray-100 shadow-sm flex flex-col justify-center">
+                    <div class="text-gray-500 text-[10px] md:text-xs font-bold uppercase tracking-wider mb-1">Ingresos extra hoy</div>
+                    <div class="text-2xl md:text-3xl font-extrabold text-brand-600">$124.50</div>
+                </div>
+                <div class="bg-white p-5 rounded-[1rem] border border-gray-100 shadow-sm flex flex-col justify-center">
+                    <div class="text-gray-500 text-[10px] md:text-xs font-bold uppercase tracking-wider mb-1">Packs salvados</div>
+                    <div class="text-2xl md:text-3xl font-extrabold text-gray-900">28</div>
+                </div>
+                <div class="bg-white p-5 rounded-[1rem] border border-gray-100 shadow-sm flex flex-col justify-center">
+                    <div class="text-gray-500 text-[10px] md:text-xs font-bold uppercase tracking-wider mb-1">Valor Recuperado</div>
+                    <div class="text-2xl md:text-3xl font-extrabold text-gray-900">$340.00</div>
+                </div>
+                <div class="bg-white p-5 rounded-[1rem] border border-gray-100 shadow-sm flex flex-col justify-center bg-gradient-to-br from-gray-900 to-gray-800 text-white cursor-pointer hover:shadow-lg transition active:scale-95">
+                    <div class="text-gray-300 text-[10px] md:text-xs font-bold uppercase tracking-wider mb-1">Acción rápida</div>
+                    <div class="text-lg md:text-xl font-extrabold flex items-center"><i class="fa-solid fa-plus-circle mr-2 text-brand-500"></i> Nuevo Pack</div>
+                </div>
+            </div>
+
+            <div class="flex justify-between items-center mb-5">
+                <h3 class="text-lg md:text-xl font-extrabold text-gray-900">Inventario Activo</h3>
+                <!-- Filters -->
+                <div class="hidden md:flex gap-2">
+                    <span class="bg-gray-900 text-white text-xs font-bold px-3 py-1.5 rounded-lg cursor-pointer">Todos</span>
+                    <span class="bg-white border border-gray-200 text-gray-600 hover:text-gray-900 text-xs font-bold px-3 py-1.5 rounded-lg cursor-pointer transition">Agotados</span>
+                </div>
+            </div>
+
+            <!-- Mobile-friendly Cards instead of Tables -->
+            <div class="space-y-4">
+                <!-- Admin Item Card 1 -->
+                <div class="bg-white rounded-[1rem] p-4 md:p-5 border border-gray-100 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4 hover:border-gray-200 transition">
+                    <div class="flex items-center gap-4">
+                        <div class="w-16 h-16 md:w-20 md:h-20 rounded-[0.75rem] bg-gray-100 overflow-hidden flex-shrink-0">
+                            <img src="https://images.unsplash.com/photo-1509440159596-0249088772ff?w=200&q=80" class="w-full h-full object-cover">
+                        </div>
+                        <div>
+                            <h4 class="font-extrabold text-gray-900 text-base md:text-lg">Pack Sorpresa de Bollería</h4>
+                            <p class="text-xs text-gray-500 font-medium mb-1">Cierre: 20:30 hrs</p>
+                            <div class="flex items-center text-sm gap-2">
+                                <span class="font-bold text-brand-600">$4.50</span>
+                                <span class="text-gray-400 line-through text-xs">$15.00</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center justify-between md:justify-end gap-6 w-full md:w-auto border-t border-gray-50 md:border-none pt-4 md:pt-0">
+                        <div class="flex items-center gap-3">
+                            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Stock</span>
+                            <div class="flex items-center bg-gray-50 rounded-lg p-1 border border-gray-100">
+                                <button class="w-8 h-8 flex items-center justify-center text-gray-500 font-bold rounded-md hover:bg-white hover:shadow-sm transition">-</button>
+                                <span class="w-8 text-center font-extrabold text-gray-900 text-lg">3</span>
+                                <button class="w-8 h-8 flex items-center justify-center text-gray-500 font-bold rounded-md hover:bg-white hover:shadow-sm transition">+</button>
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                            <span class="bg-brand-50 border border-brand-100 text-brand-600 text-[11px] font-extrabold px-3 py-1.5 rounded-lg uppercase tracking-wider">Publicado</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Admin Item Card 2 -->
+                <div class="bg-white rounded-[1rem] p-4 md:p-5 border border-gray-100 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4 opacity-70">
+                    <div class="flex items-center gap-4">
+                        <div class="w-16 h-16 md:w-20 md:h-20 rounded-[0.75rem] bg-gray-100 overflow-hidden flex-shrink-0 grayscale">
+                            <img src="https://images.unsplash.com/photo-1550617931-e17a7b70dce2?w=200&q=80" class="w-full h-full object-cover opacity-80">
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-gray-900 text-base md:text-lg">Panes Artesanales (Ayer)</h4>
+                            <p class="text-xs text-gray-500 font-medium mb-1">Cierre: 18:00 hrs</p>
+                            <div class="flex items-center text-sm gap-2">
+                                <span class="font-bold text-gray-900">$3.00</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center justify-between md:justify-end gap-6 w-full md:w-auto border-t border-gray-50 md:border-none pt-4 md:pt-0">
+                        <div class="flex items-center gap-3">
+                            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Stock</span>
+                            <span class="w-16 text-center font-extrabold text-gray-400 text-lg">0</span>
+                        </div>
+                        <div class="flex gap-2">
+                            <span class="bg-gray-100 text-gray-500 text-[11px] font-extrabold px-3 py-1.5 rounded-lg uppercase tracking-wider">Agotado</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Forzar vista de administrador al inicio
+        document.addEventListener('DOMContentLoaded', () => {
+            document.body.setAttribute('data-view', 'admin');
+        });
+    </script>
+
+    <!-- Botón Flotante para cambiar Tema (Modo Oscuro) -->
+    <div class="fixed bottom-6 right-6 z-[9999]">
+        <button id="theme-toggle" class="w-12 h-12 rounded-full bg-white dark:bg-gray-800 text-gray-800 dark:text-white shadow-lg flex items-center justify-center border border-gray-200 dark:border-gray-700 hover:scale-110 active:scale-95 transition-all" aria-label="Cambiar tema">
+            <i id="theme-toggle-icon" class="fa-solid fa-moon text-lg"></i>
+        </button>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const toggleBtn = document.getElementById('theme-toggle');
+            const toggleIcon = document.getElementById('theme-toggle-icon');
+            
+            // Check saved theme
+            if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+                document.body.classList.add('dark');
+                if (toggleIcon) {
+                    toggleIcon.classList.remove('fa-moon');
+                    toggleIcon.classList.add('fa-sun');
+                }
+            } else {
+                document.documentElement.classList.remove('dark');
+                document.body.classList.remove('dark');
+                if (toggleIcon) {
+                    toggleIcon.classList.remove('fa-sun');
+                    toggleIcon.classList.add('fa-moon');
+                }
+            }
+            
+            if (toggleBtn) {
+                toggleBtn.addEventListener('click', () => {
+                    if (document.documentElement.classList.contains('dark')) {
+                        document.documentElement.classList.remove('dark');
+                        document.body.classList.remove('dark');
+                        localStorage.setItem('theme', 'light');
+                        if (toggleIcon) {
+                            toggleIcon.classList.remove('fa-sun');
+                            toggleIcon.classList.add('fa-moon');
+                        }
+                    } else {
+                        document.documentElement.classList.add('dark');
+                        document.body.classList.add('dark');
+                        localStorage.setItem('theme', 'dark');
+                        if (toggleIcon) {
+                            toggleIcon.classList.remove('fa-moon');
+                            toggleIcon.classList.add('fa-sun');
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+    
+</body>
+</html>

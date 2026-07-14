@@ -1,0 +1,20 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import LoginContainer from '../components/login/LoginContainer';
+import ThemeToggle from '../components/common/ThemeToggle';
+---
+
+<BaseLayout title="Acceso - CeroMerma" viewId="login">
+  <main class="container mx-auto px-4">
+    <div class="flex justify-center items-center py-6 mt-8">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center text-white text-lg shadow-md">
+          <i class="fa-solid fa-leaf"></i>
+        </div>
+        <span class="text-3xl font-black text-gray-900 dark:text-white tracking-tight font-display">Cero<span class="text-emerald-500">Merma</span></span>
+      </div>
+    </div>
+    <LoginContainer client:load />
+  </main>
+  <ThemeToggle client:load />
+</BaseLayout>

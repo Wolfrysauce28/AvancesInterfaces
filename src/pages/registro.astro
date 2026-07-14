@@ -1,0 +1,20 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SurveyWizard from '../components/survey/SurveyWizard';
+import ThemeToggle from '../components/common/ThemeToggle';
+---
+
+<BaseLayout title="Registro - Perfil de Rescatador" viewId="survey">
+  <main class="container mx-auto px-4 py-8">
+    <div class="flex justify-center items-center py-4 mb-4">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 bg-emerald-500 rounded-xl flex items-center justify-center text-white text-base shadow-md">
+          <i class="fa-solid fa-leaf"></i>
+        </div>
+        <span class="text-2xl font-black text-gray-900 dark:text-white tracking-tight font-display">Cero<span class="text-emerald-500">Merma</span></span>
+      </div>
+    </div>
+    <SurveyWizard client:load />
+  </main>
+  <ThemeToggle client:load />
+</BaseLayout>

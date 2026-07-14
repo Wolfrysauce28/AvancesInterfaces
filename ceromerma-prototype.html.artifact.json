@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "kind": "html",
+  "title": "Prototipo CeroMerma",
+  "entry": "ceromerma-prototype.html",
+  "renderer": "html",
+  "status": "complete",
+  "exports": [
+    "html",
+    "pdf",
+    "zip"
+  ],
+  "primary": true,
+  "createdAt": "2026-07-02T13:51:01.274Z",
+  "updatedAt": "2026-07-02T13:51:01.282Z",
+  "metadata": {
+    "identifier": "ceromerma-prototype",
+    "artifactType": "text/html",
+    "inferred": false
+  }
+}

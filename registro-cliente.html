@@ -1,0 +1,846 @@
+
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registro CeroMerma - Configura tu Perfil de Rescatador</title>
+  <!-- Google Fonts para tipografía premium -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg: oklch(98% 0.004 240);
+      --surface: oklch(100% 0 0);
+      --fg: oklch(20% 0.02 240);
+      --muted: oklch(50% 0.018 240);
+      --border: oklch(90% 0.006 240);
+      --accent: oklch(62% 0.17 145); /* Verde CeroMerma */
+      --accent-hover: oklch(55% 0.17 145);
+      --accent-light: oklch(96% 0.02 145);
+      --danger: oklch(60% 0.18 25);
+      
+      --font-display: 'Outfit', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      --font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+      --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.06);
+      --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--fg);
+      font-family: var(--font-body);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      overflow-x: hidden;
+    }
+
+    /* Contenedor Principal del Formulario */
+    .form-container {
+      background-color: var(--surface);
+      width: 100%;
+      max-width: 680px;
+      border-radius: 24px;
+      box-shadow: var(--shadow-md);
+      border: 1px solid var(--border);
+      padding: 2.5rem;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      min-height: 580px;
+      transition: var(--transition);
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 0.75rem;
+      }
+      .form-container {
+        padding: 1.5rem;
+        border-radius: 16px;
+        min-height: calc(100vh - 1.5rem);
+      }
+    }
+
+    /* Cabecera y Progreso */
+    .form-header {
+      margin-bottom: 2rem;
+    }
+
+    .brand-title {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .progress-bar-container {
+      width: 100%;
+      height: 6px;
+      background-color: var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-top: 1rem;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 5%;
+      background-color: var(--accent);
+      border-radius: 10px;
+      transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .steps-indicator {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* Preguntas y Contenido Dinámico */
+    .question-wrapper {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .question-title {
+      font-family: var(--font-display);
+      font-size: 1.6rem;
+      font-weight: 600;
+      line-height: 1.3;
+      margin-bottom: 0.75rem;
+      color: var(--fg);
+    }
+
+    .question-desc {
+      font-size: 0.95rem;
+      color: var(--muted);
+      margin-bottom: 1.75rem;
+      line-height: 1.5;
+    }
+
+    /* Opciones de Selección */
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.75rem;
+      margin-bottom: 2rem;
+    }
+
+    .options-grid.grid-2 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (max-width: 500px) {
+      .options-grid.grid-2 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .option-card {
+      background-color: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      padding: 1.25rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      font-weight: 500;
+      font-size: 1rem;
+      transition: var(--transition);
+      position: relative;
+      user-select: none;
+    }
+
+    .option-card:hover {
+      border-color: var(--accent);
+      background-color: var(--accent-light);
+      transform: translateY(-2px);
+    }
+
+    .option-card.selected {
+      border-color: var(--accent);
+      background-color: var(--accent-light);
+    }
+
+    .option-card.selected::after {
+      content: '✓';
+      position: absolute;
+      right: 1.25rem;
+      color: var(--accent);
+      font-weight: 700;
+      font-size: 1.2rem;
+    }
+
+    .option-emoji {
+      font-size: 1.5rem;
+      background: var(--bg);
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+      transition: var(--transition);
+    }
+
+    .option-card.selected .option-emoji {
+      background-color: var(--surface);
+    }
+
+    /* Botones de Navegación */
+    .navigation-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1.5rem;
+      border-top: 1px solid var(--border);
+      padding-top: 1.5rem;
+    }
+
+    .btn {
+      font-family: var(--font-body);
+      font-size: 1rem;
+      font-weight: 600;
+      padding: 0.85rem 1.75rem;
+      border-radius: 14px;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: var(--transition);
+    }
+
+    .btn-secondary {
+      background-color: transparent;
+      color: var(--muted);
+      border: 1px solid transparent;
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      color: var(--fg);
+      background-color: var(--bg);
+    }
+
+    .btn-primary {
+      background-color: var(--accent);
+      color: white;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background-color: var(--accent-hover);
+      transform: translateY(-1px);
+    }
+
+    .btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      transform: none !important;
+      box-shadow: none !important;
+    }
+
+    /* Pantallas Especiales (Inicio y Final) */
+    .start-screen, .end-screen {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem 0;
+    }
+
+    .start-illustration {
+      font-size: 4rem;
+      margin-bottom: 1.5rem;
+      animation: pulse 2s infinite ease-in-out;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+    }
+
+    /* Resumen de Resultados Finales */
+    .summary-scroll {
+      width: 100%;
+      max-height: 320px;
+      overflow-y: auto;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1rem;
+      margin-top: 1.5rem;
+      margin-bottom: 1.5rem;
+      text-align: left;
+      background-color: var(--bg);
+    }
+
+    .summary-item {
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .summary-item:last-child {
+      border-bottom: none;
+    }
+
+    .summary-q {
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--fg);
+      margin-bottom: 0.25rem;
+    }
+
+    .summary-a {
+      font-size: 0.95rem;
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    /* Scrollbar minimalista */
+    .summary-scroll::-webkit-scrollbar {
+      width: 6px;
+    }
+    .summary-scroll::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .summary-scroll::-webkit-scrollbar-thumb {
+      background-color: var(--border);
+      border-radius: 3px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="form-container" id="mainContainer">
+    <!-- Pantalla Inicial -->
+    <div id="startScreen" class="start-screen">
+      <div class="start-illustration">🥗</div>
+      <h1 class="question-title" style="font-size: 2.2rem; margin-bottom: 1rem;">Bienvenido a CeroMerma</h1>
+      <p class="question-desc" style="max-width: 480px; margin-bottom: 2rem; font-size: 1.05rem;">
+        Completa este breve cuestionario interactivo de registro (20 preguntas) para personalizar tu experiencia, descubrir las mejores ofertas en tu zona y definir tu perfil de Rescatador de Alimentos.
+      </p>
+      <button class="btn btn-primary" onclick="startSurvey()" style="font-size: 1.1rem; padding: 1rem 2rem;">
+        Comenzar Registro 🚀
+      </button>
+    </div>
+
+    <!-- Contenido del Formulario Dinámico -->
+    <div id="surveyContent" style="display: none; height: 100%; flex-direction: column;">
+      <div class="form-header">
+        <div class="steps-indicator">
+          <span id="blockIndicator">Bloque 1 de 4</span>
+          <span id="stepIndicator">Pregunta 1/20</span>
+        </div>
+        <div class="progress-bar-container">
+          <div class="progress-bar" id="progressBar"></div>
+        </div>
+      </div>
+
+      <div class="question-wrapper">
+        <h2 class="question-title" id="questionTitle">Cargando pregunta...</h2>
+        <p class="question-desc" id="questionDesc">Cargando descripción...</p>
+        
+        <div class="options-grid" id="optionsGrid">
+          <!-- Las opciones se inyectan dinámicamente aquí -->
+        </div>
+      </div>
+
+      <div class="navigation-row">
+        <button class="btn btn-secondary" id="btnBack" onclick="prevQuestion()" disabled>
+          ← Atrás
+        </button>
+        <button class="btn btn-primary" id="btnNext" onclick="nextQuestion()" disabled>
+          Siguiente →
+        </button>
+      </div>
+    </div>
+
+    <!-- Pantalla Final / Éxito -->
+    <div id="endScreen" class="end-screen" style="display: none;">
+      <div class="start-illustration">🎉</div>
+      <h1 class="question-title" style="font-size: 2rem; margin-bottom: 0.5rem;">¡Perfil Completado con Éxito!</h1>
+      <p class="question-desc" style="max-width: 500px; margin-bottom: 1rem;">
+        Gracias por registrarte. Hemos configurado tu cuenta según tus hábitos de rescate y alimentación. Aquí tienes un resumen de tus datos:
+      </p>
+
+      <div class="summary-scroll" id="summaryContainer">
+        <!-- El resumen se inyectará aquí -->
+      </div>
+
+      <button class="btn btn-primary" onclick="restartSurvey()" style="font-size: 1.1rem; padding: 1rem 2.5rem;">
+        Completar y Entrar a la App 🍃
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // Estructura de las 20 preguntas sin entrada manual
+    const questions = [
+      // BLOQUE 1: PERFIL GENERAL E IDENTIFICACIÓN
+      {
+        id: 1,
+        block: "Perfil General",
+        blockNum: 1,
+        title: "¿En qué rango de edad te encuentras?",
+        desc: "Esto nos ayuda a segmentar opciones relevantes para ti.",
+        type: "single",
+        options: [
+          { value: "18-24", label: "18 a 24 años", emoji: "🎓" },
+          { value: "25-34", label: "25 a 34 años", emoji: "💼" },
+          { value: "35-49", label: "35 a 49 años", emoji: "🙋‍♂️" },
+          { value: "50+", label: "50 años o más", emoji: "🌟" }
+        ]
+      },
+      {
+        id: 2,
+        block: "Perfil General",
+        blockNum: 1,
+        title: "¿Cuál es tu ocupación principal?",
+        desc: "Adecuamos las notificaciones a tus posibles horarios libres.",
+        type: "single",
+        options: [
+          { value: "estudiante", label: "Estudiante", emoji: "📚" },
+          { value: "empleado", label: "Empleado / Profesional", emoji: "👔" },
+          { value: "independiente", label: "Trabajador Independiente", emoji: "🛠️" },
+          { value: "otro", label: "Otros / En transición", emoji: "✨" }
+        ]
+      },
+      {
+        id: 3,
+        block: "Perfil General",
+        blockNum: 1,
+        title: "¿Qué distancia máxima estás dispuesto a recorrer para rescatar comida?",
+        desc: "Filtrará de forma predeterminada tu mapa de comercios.",
+        type: "single",
+        options: [
+          { value: "cerca", label: "Menos de 1 km (Caminando)", emoji: "🚶" },
+          { value: "medio", label: "Entre 1 y 3 km (Bici / Scooter)", emoji: "🚲" },
+          { value: "lejos", label: "Más de 3 km (Vehículo propio)", emoji: "🚗" }
+        ]
+      },
+      {
+        id: 4,
+        block: "Perfil General",
+        blockNum: 1,
+        title: "¿Qué medio de transporte sueles utilizar para tus desplazamientos diarios?",
+        desc: "Nos ayuda a calcular las emisiones que evitas al desplazarte.",
+        type: "single",
+        options: [
+          { value: "pie", label: "Caminando", emoji: "👟" },
+          { value: "bici", label: "Bicicleta o Vehículo Eléctrico", emoji: "🛴" },
+          { value: "publico", label: "Transporte Público", emoji: "🚌" },
+          { value: "auto", label: "Automóvil / Moto particular", emoji: "🚗" }
+        ]
+      },
+      {
+        id: 5,
+        block: "Perfil General",
+        blockNum: 1,
+        title: "¿Cómo conociste CeroMerma?",
+        desc: "Ayúdanos a entender dónde está nuestra comunidad.",
+        type: "single",
+        options: [
+          { value: "social", label: "Redes Sociales", emoji: "📱" },
+          { value: "recomendacion", label: "Recomendación de un amigo", emoji: "👥" },
+          { value: "prensa", label: "Prensa o Publicaciones", emoji: "📰" },
+          { value: "local", label: "Visto directamente en un local", emoji: "🏪" }
+        ]
+      },
+      // BLOQUE 2: PREFERENCIAS ALIMENTICIAS Y ALERGIAS
+      {
+        id: 6,
+        block: "Preferencias Alimenticias",
+        blockNum: 2,
+        title: "¿Sigues algún tipo de dieta específica?",
+        desc: "Selecciona tu tipo de alimentación habitual para priorizar categorías.",
+        type: "single",
+        options: [
+          { value: "sin_restricciones", label: "Sin restricciones (Como de todo)", emoji: "🍽️" },
+          { value: "vegetariano", label: "Vegetariano", emoji: "🥑" },
+          { value: "vegano", label: "Vegano", emoji: "🌱" },
+          { value: "flexitariano", label: "Flexitariano (Poca carne)", emoji: "🐟" }
+        ]
+      },
+      {
+        id: 7,
+        block: "Preferencias Alimenticias",
+        blockNum: 2,
+        title: "¿Tienes alergias o restricciones médicas? (Multiselección)",
+        desc: "Marcaremos advertencias en productos que contengan estos elementos.",
+        type: "multiple",
+        options: [
+          { value: "ninguna", label: "Ninguna alergia", emoji: "✅" },
+          { value: "gluten", label: "Gluten (Celiaco)", emoji: "🌾" },
+          { value: "lactosa", label: "Lactosa / Lácteos", emoji: "🥛" },
+          { value: "frutos_secos", label: "Frutos secos / Maní", emoji: "🥜" },
+          { value: "mariscos", label: "Mariscos / Pescados", emoji: "🍤" }
+        ]
+      },
+      {
+        id: 8,
+        block: "Preferencias Alimenticias",
+        blockNum: 2,
+        title: "¿Cuáles son tus categorías de comida favoritas? (Multiselección)",
+        desc: "Personaliza tu menú de inicio rápido.",
+        type: "multiple",
+        options: [
+          { value: "panaderia", label: "Panadería y Pastelería", emoji: "🥐" },
+          { value: "platos_fuertes", label: "Platos Preparados / Menús", emoji: "🍲" },
+          { value: "frutas_verduras", label: "Frutas y Verduras frescas", emoji: "🍎" },
+          { value: "lacteos_embutidos", label: "Lácteos y Embutidos", emoji: "🧀" },
+          { value: "bebidas", label: "Jugos, Café y Bebidas", emoji: "🥤" }
+        ]
+      },
+      {
+        id: 9,
+        block: "Preferencias Alimenticias",
+        blockNum: 2,
+        title: "¿Con qué frecuencia compras comida preparada fuera de casa?",
+        desc: "Así comprendemos tus necesidades de consumo diario.",
+        type: "single",
+        options: [
+          { value: "diario", label: "Todos los días o casi todos", emoji: "📅" },
+          { value: "semanal", label: "2 a 3 veces por semana", emoji: "⏳" },
+          { value: "ocasional", label: "Rara vez o solo fines de semana", emoji: "🎉" }
+        ]
+      },
+      {
+        id: 10,
+        block: "Preferencias Alimenticias",
+        blockNum: 2,
+        title: "¿En qué momentos del día buscas comida lista para consumir?",
+        desc: "Para enviarte notificaciones cuando los comercios publican excedentes listos.",
+        type: "multiple",
+        options: [
+          { value: "desayuno", label: "Mañana (Desayuno/Brunch)", emoji: "☕" },
+          { value: "almuerzo", label: "Mediodía (Almuerzo)", emoji: "🍱" },
+          { value: "tarde", label: "Tarde (Meriendas)", emoji: "🍰" },
+          { value: "cena", label: "Noche (Cena/Cierre de locales)", emoji: "🍕" }
+        ]
+      },
+      // BLOQUE 3: HÁBITOS Y MOTIVACIONES DE COMPRA
+      {
+        id: 11,
+        block: "Hábitos y Motivación",
+        blockNum: 3,
+        title: "¿Cuánto sueles gastar al día en alimentación?",
+        desc: "Filtraremos opciones que se acomoden a tu presupuesto.",
+        type: "single",
+        options: [
+          { value: "bajo", label: "Menos de $5.00 USD", emoji: "🪙" },
+          { value: "medio", label: "Entre $5.00 y $12.00 USD", emoji: "💵" },
+          { value: "alto", label: "Más de $12.00 USD", emoji: "💳" }
+        ]
+      },
+      {
+        id: 12,
+        block: "Hábitos y Motivación",
+        blockNum: 3,
+        title: "¿Cuál es tu principal motivación al usar CeroMerma?",
+        desc: "Ajusta la prioridad en el contenido del feed.",
+        type: "single",
+        options: [
+          { value: "ahorro", label: "Ahorrar dinero en comida de calidad", emoji: "💰" },
+          { value: "ecologia", label: "Ayudar al planeta / Reducir desperdicios", emoji: "🌍" },
+          { value: "variedad", label: "Descubrir locales nuevos y variados", emoji: "🍽️" }
+        ]
+      },
+      {
+        id: 13,
+        block: "Hábitos y Motivación",
+        blockNum: 3,
+        title: "¿Qué método de pago prefieres utilizar en la plataforma?",
+        desc: "Para acelerar tu flujo de reserva en promociones ultrarápidas.",
+        type: "single",
+        options: [
+          { value: "tarjeta", label: "Tarjeta de Crédito / Débito", emoji: "💳" },
+          { value: "movil", label: "Pago Móvil (Apple Pay / Google Wallet)", emoji: "📲" },
+          { value: "efectivo", label: "Efectivo al retirar en local", emoji: "💵" }
+        ]
+      },
+      {
+        id: 14,
+        block: "Hábitos y Motivación",
+        blockNum: 3,
+        title: "¿Qué sueles hacer en casa cuando sobra comida?",
+        desc: "Nos ayuda a perfilar tu índice de desperdicio doméstico.",
+        type: "single",
+        options: [
+          { value: "reutilizo", label: "La guardo, congelo o transformo", emoji: "🍱" },
+          { value: "desecho", label: "A veces se me olvida y termina dañándose", emoji: "🗑️" },
+          { value: "organico", label: "Hago compostaje / abono orgánico", emoji: "🌱" }
+        ]
+      },
+      {
+        id: 15,
+        block: "Hábitos y Motivación",
+        blockNum: 3,
+        title: "¿Qué tan importantes son los descuentos en tu decisión de compra?",
+        desc: "Determina si te notificamos sobre ofertas relámpago con >50% desc.",
+        type: "single",
+        options: [
+          { value: "muy", label: "Crítico: Solo compro si tiene buen descuento", emoji: "🔥" },
+          { value: "medio", label: "Moderado: Es un plus pero no definitivo", emoji: "⚖️" },
+          { value: "bajo", label: "Bajo: Me interesa más la calidad/causa ecológica", emoji: "🌱" }
+        ]
+      },
+      // BLOQUE 4: USABILIDAD Y CONCIENCIA ECOLÓGICA
+      {
+        id: 16,
+        block: "Uso de la App y Ecología",
+        blockNum: 4,
+        title: "¿Con qué frecuencia esperas realizar rescates de comida a la semana?",
+        desc: "Nos permite ajustar el volumen de recordatorios semanales.",
+        type: "single",
+        options: [
+          { value: "diaria", label: "Frecuente (4 a 7 veces por semana)", emoji: "⚡" },
+          { value: "moderada", label: "Ocasional (1 a 3 veces por semana)", emoji: "🗓️" },
+          { value: "rara", label: "Solo en emergencias o fines de mes", emoji: "🔍" }
+        ]
+      },
+      {
+        id: 17,
+        block: "Uso de la App y Ecología",
+        blockNum: 4,
+        title: "¿Cuáles canales prefieres para recibir alertas de comida próxima a caducar?",
+        desc: "Por la rapidez de estas ofertas, sugerimos notificaciones Push.",
+        type: "multiple",
+        options: [
+          { value: "push", label: "Notificaciones Push en el Móvil", emoji: "🔔" },
+          { value: "whatsapp", label: "Mensajes por WhatsApp", emoji: "💬" },
+          { value: "email", label: "Correo Electrónico (Resumen diario)", emoji: "✉️" }
+        ]
+      },
+      {
+        id: 18,
+        block: "Uso de la App y Ecología",
+        blockNum: 4,
+        title: "¿Te gustaría ver en tu perfil cuántos kilogramos de CO2 has evitado emitir?",
+        desc: "Gamificación ecológica para medir tu impacto real.",
+        type: "single",
+        options: [
+          { value: "si", label: "Sí, me parece muy motivador e interesante", emoji: "📊" },
+          { value: "no", label: "No, prefiero centrarme en los ahorros directos", emoji: "❌" }
+        ]
+      },
+      {
+        id: 19,
+        block: "Uso de la App y Ecología",
+        blockNum: 4,
+        title: "¿Estarías dispuesto a llevar tus propios recipientes a los locales para el retiro?",
+        desc: "Muchos establecimientos premian esto con descuentos adicionales.",
+        type: "single",
+        options: [
+          { value: "si_siempre", label: "Sí, siempre llevo mis envases/bolsas", emoji: "🎒" },
+          { value: "a_veces", label: "A veces, si el local lo especifica", emoji: "🥣" },
+          { value: "no_comodo", label: "No, prefiero que me entreguen empaquetado", emoji: "🛍️" }
+        ]
+      },
+      {
+        id: 20,
+        block: "Uso de la App y Ecología",
+        blockNum: 4,
+        title: "¿Qué tan cómodo te sientes navegando en mapas digitales interactivos?",
+        desc: "Para decidir si activamos el modo guía/tutorial al iniciar.",
+        type: "single",
+        options: [
+          { value: "experto", label: "Muy cómodo (Uso Google Maps/Waze diario)", emoji: "🗺️" },
+          { value: "basico", label: "Básico (Sé buscar direcciones básicas)", emoji: "📍" },
+          { value: "tutorial", label: "Prefiero una lista ordenada en lugar de mapas", emoji: "📋" }
+        ]
+      }
+    ];
+
+    let currentStep = -1; // -1 es la pantalla de inicio
+    let answers = {};
+
+    function startSurvey() {
+      document.getElementById('startScreen').style.display = 'none';
+      document.getElementById('surveyContent').style.display = 'flex';
+      currentStep = 0;
+      loadQuestion();
+    }
+
+    function loadQuestion() {
+      const q = questions[currentStep];
+      
+      // Actualizar indicadores superiores
+      document.getElementById('blockIndicator').innerText = `Bloque ${q.blockNum} de 4: ${q.block}`;
+      document.getElementById('stepIndicator').innerText = `Pregunta ${currentStep + 1} de 20`;
+      
+      // Progreso
+      const progressPercent = ((currentStep + 1) / questions.length) * 100;
+      document.getElementById('progressBar').style.width = `${progressPercent}%`;
+      
+      // Contenidos
+      document.getElementById('questionTitle').innerText = q.title;
+      document.getElementById('questionDesc').innerText = q.desc;
+      
+      const grid = document.getElementById('optionsGrid');
+      grid.innerHTML = "";
+      
+      // Cambiar layout de grid si hay muchas opciones
+      if (q.options.length > 4) {
+        grid.className = "options-grid grid-2";
+      } else {
+        grid.className = "options-grid";
+      }
+
+      q.options.forEach(opt => {
+        const card = document.createElement('div');
+        card.className = "option-card";
+        if (isOptionSelected(q.id, opt.value)) {
+          card.classList.add('selected');
+        }
+        
+        card.innerHTML = `
+          <div class="option-emoji">${opt.emoji}</div>
+          <span>${opt.label}</span>
+        `;
+        
+        card.onclick = () => selectOption(q.id, opt.value, q.type);
+        grid.appendChild(card);
+      });
+
+      // Navegación
+      document.getElementById('btnBack').disabled = currentStep === 0;
+      updateNextButtonState();
+    }
+
+    function isOptionSelected(questionId, value) {
+      if (!answers[questionId]) return false;
+      if (Array.isArray(answers[questionId])) {
+        return answers[questionId].includes(value);
+      }
+      return answers[questionId] === value;
+    }
+
+    function selectOption(questionId, value, type) {
+      if (type === 'single') {
+        answers[questionId] = value;
+      } else {
+        // Multiselección
+        if (!answers[questionId]) answers[questionId] = [];
+        const index = answers[questionId].indexOf(value);
+        
+        if (index > -1) {
+          answers[questionId].splice(index, 1);
+        } else {
+          // Si seleccionan 'ninguna' (caso alergias), limpiar el resto
+          if (value === 'ninguna') {
+            answers[questionId] = ['ninguna'];
+          } else {
+            // Eliminar 'ninguna' si seleccionan otra cosa
+            const noneIndex = answers[questionId].indexOf('ninguna');
+            if (noneIndex > -1) answers[questionId].splice(noneIndex, 1);
+            answers[questionId].push(value);
+          }
+        }
+      }
+      loadQuestion();
+    }
+
+    function updateNextButtonState() {
+      const q = questions[currentStep];
+      const ans = answers[q.id];
+      const hasAnswer = ans !== undefined && ans !== null && (Array.isArray(ans) ? ans.length > 0 : ans !== "");
+      
+      const btnNext = document.getElementById('btnNext');
+      btnNext.disabled = !hasAnswer;
+      
+      if (currentStep === questions.length - 1) {
+        btnNext.innerHTML = "Finalizar Registro 🏁";
+      } else {
+        btnNext.innerHTML = "Siguiente →";
+      }
+    }
+
+    function nextQuestion() {
+      if (currentStep < questions.length - 1) {
+        currentStep++;
+        loadQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function prevQuestion() {
+      if (currentStep > 0) {
+        currentStep--;
+        loadQuestion();
+      }
+    }
+
+    function showResults() {
+      document.getElementById('surveyContent').style.display = 'none';
+      document.getElementById('endScreen').style.display = 'flex';
+      
+      const container = document.getElementById('summaryContainer');
+      container.innerHTML = "";
+      
+      questions.forEach(q => {
+        const item = document.createElement('div');
+        item.className = "summary-item";
+        
+        let answerLabel = "";
+        const ans = answers[q.id];
+        
+        if (Array.isArray(ans)) {
+          answerLabel = ans.map(val => {
+            const opt = q.options.find(o => o.value === val);
+            return opt ? `${opt.emoji} ${opt.label}` : val;
+          }).join(", ");
+        } else {
+          const opt = q.options.find(o => o.value === ans);
+          answerLabel = opt ? `${opt.emoji} ${opt.label}` : ans;
+        }
+        
+        item.innerHTML = `
+          <div class="summary-q">${q.id}. ${q.title}</div>
+          <div class="summary-a">${answerLabel}</div>
+        `;
+        container.appendChild(item);
+      });
+      
+      // Guardar respuestas en localStorage de manera simulada
+      localStorage.setItem('ceromerma_profile_completed', 'true');
+      localStorage.setItem('ceromerma_client_answers', JSON.stringify(answers));
+    }
+
+    function restartSurvey() {
+      // Reiniciar encuesta
+      answers = {};
+      currentStep = -1;
+      document.getElementById('endScreen').style.display = 'none';
+      document.getElementById('startScreen').style.display = 'flex';
+    }
+  </script>
+</body>
+</html>

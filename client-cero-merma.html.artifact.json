@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "kind": "html",
+  "title": "client-cero-merma.html",
+  "entry": "client-cero-merma.html",
+  "renderer": "html",
+  "status": "complete",
+  "exports": [
+    "html",
+    "pdf",
+    "zip"
+  ],
+  "createdAt": "2026-07-02T14:43:06.231Z",
+  "updatedAt": "2026-07-02T14:43:06.231Z",
+  "metadata": {
+    "inferred": true,
+    "reconciled": true
+  }
+}

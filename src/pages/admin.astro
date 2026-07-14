@@ -1,0 +1,12 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import AdminDashboard from '../components/admin/AdminDashboard';
+import ThemeToggle from '../components/common/ThemeToggle';
+---
+
+<BaseLayout title="Panel de Control KDS" viewId="admin">
+  <main id="app" class="max-w-7xl mx-auto w-full transition-all duration-300">
+    <AdminDashboard client:load />
+  </main>
+  <ThemeToggle client:load />
+</BaseLayout>

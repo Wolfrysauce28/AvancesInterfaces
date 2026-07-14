@@ -1,0 +1,97 @@
+---
+interface Props {
+  title: string;
+  viewId?: string;
+}
+
+const { title, viewId = "home" } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>{title} - CeroMerma</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+    <!-- Script de inicialización de tema oscuro para evitar parpadeo -->
+    <script is:inline>
+      const getTheme = () => {
+        if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
+          return localStorage.getItem('theme');
+        }
+        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      };
+      
+      const theme = getTheme();
+      if (theme === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    </script>
+  </head>
+  <body class="antialiased font-sans bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-100 min-h-screen transition-colors duration-300" data-view={viewId}>
+    <slot />
+
+    <style is:global>
+      /* Variables globales basadas en oklch de registro-cliente */
+      :root {
+        --accent: #10b981;
+        --accent-hover: #059669;
+        --font-display: 'Outfit', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        --font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      }
+
+      /* Estilos generales y animaciones */
+      .font-display {
+        font-family: var(--font-display);
+      }
+      .font-body {
+        font-family: var(--font-body);
+      }
+
+      @keyframes slideUp { 
+        from { opacity: 0; transform: translateY(15px); } 
+        to { opacity: 1; transform: translateY(0); } 
+      }
+      
+      .view-section {
+        animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+      }
+      
+      .hide-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+      .hide-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      }
+      .btn-primary:hover {
+        background: linear-gradient(135deg, #059669 0%, #047857 100%);
+      }
+
+      /* Lógica de espaciados responsive de client-cero-merma */
+      body[data-view="home"] #app { padding-top: 135px; padding-bottom: 80px; }
+      @media (min-width: 768px) { body[data-view="home"] #app { padding-top: 100px; padding-bottom: 40px; } }
+
+      body[data-view="product"] #app { padding-top: 0; padding-bottom: 100px; }
+      @media (min-width: 768px) { body[data-view="product"] #app { padding-top: 100px; padding-bottom: 40px; } }
+
+      body[data-view="admin"] #app { padding-top: 80px; padding-bottom: 90px; }
+      @media (min-width: 768px) { body[data-view="admin"] #app { padding-top: 100px; padding-bottom: 40px; } }
+    </style>
+  </body>
+</html>

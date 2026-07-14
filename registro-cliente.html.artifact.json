@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "kind": "html",
+  "title": "Formulario Interactivo de Registro de Cliente",
+  "entry": "registro-cliente.html",
+  "renderer": "html",
+  "status": "complete",
+  "exports": [
+    "html",
+    "pdf",
+    "zip"
+  ],
+  "primary": true,
+  "createdAt": "2026-07-13T14:27:51.815Z",
+  "updatedAt": "2026-07-13T14:27:51.824Z",
+  "metadata": {
+    "identifier": "registro-cliente",
+    "artifactType": "text/html",
+    "inferred": false
+  }
+}
