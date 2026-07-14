@@ -4,7 +4,9 @@ import { loginUserUseCase, surveyRepository, userRepository } from '../../core/c
 export const LoginContainer: React.FC = () => {
   const [isRightActive, setIsRightActive] = useState(false);
   const [clientEmail, setClientEmail] = useState('');
+  const [clientPassword, setClientPassword] = useState('');
   const [adminEmail, setAdminEmail] = useState('');
+  const [adminPassword, setAdminPassword] = useState('');
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -16,8 +18,19 @@ export const LoginContainer: React.FC = () => {
   const handleClientLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+
+    // Validaciones de seguridad en frontend
+    if (!clientEmail.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+      setError('Por favor, ingresa un correo electrónico válido.');
+      return;
+    }
+    if (clientPassword.length < 6) {
+      setError('La contraseña debe tener al menos 6 caracteres.');
+      return;
+    }
+
     try {
-      await loginUserUseCase.execute(clientEmail || 'cliente@ceromerma.com', 'client');
+      await loginUserUseCase.execute(clientEmail, clientPassword, 'client');
       const profileCompleted = await surveyRepository.isCompleted();
       if (profileCompleted) {
         window.location.href = '/client';
@@ -32,8 +45,19 @@ export const LoginContainer: React.FC = () => {
   const handleAdminLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+
+    // Validaciones de seguridad en frontend
+    if (!adminEmail.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+      setError('Por favor, ingresa un correo electrónico válido.');
+      return;
+    }
+    if (adminPassword.length < 6) {
+      setError('La contraseña debe tener al menos 6 caracteres.');
+      return;
+    }
+
     try {
-      await loginUserUseCase.execute(adminEmail || 'admin@eltrigo.com', 'admin');
+      await loginUserUseCase.execute(adminEmail, adminPassword, 'admin');
       window.location.href = '/admin';
     } catch (err: any) {
       setError(err.message || 'Error al iniciar sesión');
@@ -80,6 +104,8 @@ export const LoginContainer: React.FC = () => {
               <input 
                 type="password" 
                 placeholder="Contraseña de acceso" 
+                value={adminPassword}
+                onChange={(e) => setAdminPassword(e.target.value)}
                 className="w-full bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white border-2 border-transparent rounded-[16px] py-3.5 pl-12 pr-4 font-medium outline-none focus:bg-white focus:border-emerald-500 dark:focus:bg-gray-800 transition-all"
                 required 
               />
@@ -147,6 +173,8 @@ export const LoginContainer: React.FC = () => {
               <input 
                 type="password" 
                 placeholder="Contraseña" 
+                value={clientPassword}
+                onChange={(e) => setClientPassword(e.target.value)}
                 className="w-full bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white border-2 border-transparent rounded-[16px] py-3.5 pl-12 pr-4 font-medium outline-none focus:bg-white focus:border-emerald-500 dark:focus:bg-gray-800 transition-all"
                 required 
               />

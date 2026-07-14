@@ -4,10 +4,10 @@ import type { User, UserRole } from '../../domain/entities/User';
 export class LoginUser {
   constructor(private userRepository: UserRepository) {}
 
-  async execute(email: string, role: UserRole): Promise<User> {
+  async execute(email: string, password?: string, role?: UserRole): Promise<User> {
     if (!email) {
       throw new Error('El correo electrónico es requerido.');
     }
-    return this.userRepository.login(email, role);
+    return this.userRepository.login(email, password, role);
   }
 }

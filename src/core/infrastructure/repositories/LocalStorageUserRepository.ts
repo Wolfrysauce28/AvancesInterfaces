@@ -2,7 +2,7 @@ import type { UserRepository } from '../../domain/repositories/UserRepository';
 import type { User, UserRole } from '../../domain/entities/User';
 
 export class LocalStorageUserRepository implements UserRepository {
-  async login(email: string, role: UserRole): Promise<User> {
+  async login(email: string, password?: string, role: UserRole = 'client'): Promise<User> {
     const user: User = {
       id: role === 'admin' ? 'user-admin-1' : 'user-client-1',
       name: role === 'admin' ? 'Admin - El Trigo' : 'Juan Pérez',
