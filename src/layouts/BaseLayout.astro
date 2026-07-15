@@ -2,17 +2,27 @@
 interface Props {
   title: string;
   viewId?: string;
+  description?: string;
 }
 
-const { title, viewId = "home" } = Astro.props;
+const { title, viewId = "home", description = "Rescata comida deliciosa con grandes descuentos y ayuda al planeta. Encuentra packs sorpresa de restaurantes y tiendas cerca de ti." } = Astro.props;
 ---
 
 <!DOCTYPE html>
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>{title} - CeroMerma</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="description" content={description} />
+    <title>{title} - FoodSave</title>
+    
+    <!-- PWA & Mobile Optimization -->
+    <meta name="theme-color" content="#10b981" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#1f2937" media="(prefers-color-scheme: dark)" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍃</text></svg>" />
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -49,9 +59,14 @@ const { title, viewId = "home" } = Astro.props;
         --accent-hover: #059669;
         --font-display: 'Outfit', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
         --font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        /* Safe Area Insets */
+        --safe-area-inset-top: env(safe-area-inset-top, 0px);
+        --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+        --safe-area-inset-left: env(safe-area-inset-left, 0px);
+        --safe-area-inset-right: env(safe-area-inset-right, 0px);
       }
 
-      /* Estilos generales y animaciones */
+      /* Estilos generales y fuentes */
       .font-display {
         font-family: var(--font-display);
       }
@@ -59,15 +74,111 @@ const { title, viewId = "home" } = Astro.props;
         font-family: var(--font-body);
       }
 
+      /* ---- ANIMACIONES ---- */
       @keyframes slideUp { 
         from { opacity: 0; transform: translateY(15px); } 
         to { opacity: 1; transform: translateY(0); } 
+      }
+      @keyframes slideDown { 
+        from { opacity: 0; transform: translateY(-10px); } 
+        to { opacity: 1; transform: translateY(0); } 
+      }
+      @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+      @keyframes slideInRight {
+        from { transform: translateX(100%); }
+        to { transform: translateX(0); }
+      }
+      @keyframes slideOutRight {
+        from { transform: translateX(0); }
+        to { transform: translateX(100%); }
+      }
+      @keyframes slideUpModal {
+        from { opacity: 0; transform: translateY(100%); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      @keyframes shimmer {
+        0% { background-position: -200% 0; }
+        100% { background-position: 200% 0; }
+      }
+      @keyframes pulseGlow {
+        0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+        50% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+      }
+      @keyframes confettiFall {
+        0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+        100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+      }
+      @keyframes progressShrink {
+        from { width: 100%; }
+        to { width: 0%; }
+      }
+      @keyframes bounceIn {
+        0% { transform: scale(0.3); opacity: 0; }
+        50% { transform: scale(1.05); }
+        70% { transform: scale(0.9); }
+        100% { transform: scale(1); opacity: 1; }
+      }
+      @keyframes stockFlash {
+        0% { background-color: rgba(16, 185, 129, 0.3); }
+        100% { background-color: transparent; }
       }
       
       .view-section {
         animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
       }
+      .animate-show {
+        animation: fadeIn 0.3s ease-out;
+      }
+      .animate-slide-up-modal {
+        animation: slideUpModal 0.35s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+      }
+      .animate-slide-in-right {
+        animation: slideInRight 0.3s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+      }
+      .animate-slide-out-right {
+        animation: slideOutRight 0.25s ease-in forwards;
+      }
+      .animate-bounce-in {
+        animation: bounceIn 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
+      }
+      .animate-stock-flash {
+        animation: stockFlash 0.6s ease-out;
+      }
+      .animate-pulse-glow {
+        animation: pulseGlow 1.5s ease-in-out infinite;
+      }
       
+      /* ---- SKELETON LOADER ---- */
+      .skeleton {
+        background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
+        background-size: 200% 100%;
+        animation: shimmer 1.5s infinite;
+        border-radius: 0.5rem;
+      }
+      .dark .skeleton {
+        background: linear-gradient(90deg, #374151 25%, #4b5563 50%, #374151 75%);
+        background-size: 200% 100%;
+      }
+
+      /* ---- TOAST SYSTEM ---- */
+      .toast-progress-bar {
+        animation: progressShrink 5s linear forwards;
+      }
+
+      /* ---- CONFETTI ---- */
+      .confetti-piece {
+        position: fixed;
+        width: 10px;
+        height: 10px;
+        top: -10px;
+        z-index: 9999;
+        animation: confettiFall 2.5s ease-in forwards;
+      }
+
+      /* ---- SCROLLBAR ---- */
       .hide-scrollbar::-webkit-scrollbar {
         display: none;
       }
@@ -76,6 +187,7 @@ const { title, viewId = "home" } = Astro.props;
         scrollbar-width: none;
       }
 
+      /* ---- BUTTONS ---- */
       .btn-primary {
         background: linear-gradient(135deg, #10b981 0%, #059669 100%);
       }
@@ -83,7 +195,15 @@ const { title, viewId = "home" } = Astro.props;
         background: linear-gradient(135deg, #059669 0%, #047857 100%);
       }
 
-      /* Lógica de espaciados responsive de client-cero-merma */
+      /* ---- SAFE AREA PADDING ---- */
+      .pb-safe {
+        padding-bottom: max(0.5rem, var(--safe-area-inset-bottom));
+      }
+      .pt-safe {
+        padding-top: max(0px, var(--safe-area-inset-top));
+      }
+
+      /* Lógica de espaciados responsive de client-foodsave */
       body[data-view="home"] #app { padding-top: 135px; padding-bottom: 80px; }
       @media (min-width: 768px) { body[data-view="home"] #app { padding-top: 100px; padding-bottom: 40px; } }
 
@@ -92,6 +212,29 @@ const { title, viewId = "home" } = Astro.props;
 
       body[data-view="admin"] #app { padding-top: 80px; padding-bottom: 90px; }
       @media (min-width: 768px) { body[data-view="admin"] #app { padding-top: 100px; padding-bottom: 40px; } }
+
+      /* ---- MODAL OVERLAY ---- */
+      .modal-overlay {
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+      }
+
+      /* ---- FOCUS VISIBLE ---- */
+      *:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+        border-radius: 4px;
+      }
+
+      /* ---- REDUCED MOTION ---- */
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
     </style>
   </body>
 </html>

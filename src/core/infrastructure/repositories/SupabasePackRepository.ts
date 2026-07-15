@@ -2,8 +2,24 @@ import type { PackRepository } from '../../domain/repositories/PackRepository';
 import type { Pack } from '../../domain/entities/Pack';
 import { supabase } from '../datasources/supabaseClient';
 
+type PackRow = {
+  id: string;
+  store_id: string;
+  store_name: string;
+  name: string;
+  description: string;
+  image_url: string;
+  original_price: number;
+  discounted_price: number;
+  stock: number;
+  collection_time: string;
+  is_urgent: boolean;
+  co2_saved_kg: number;
+  category: string;
+};
+
 export class SupabasePackRepository implements PackRepository {
-  private mapRowToPack(row: any): Pack {
+  private mapRowToPack(row: PackRow): Pack {
     return {
       id: row.id,
       storeId: row.store_id,
@@ -21,7 +37,7 @@ export class SupabasePackRepository implements PackRepository {
     };
   }
 
-  private mapPackToRow(pack: Omit<Pack, 'id'>) {
+  private mapPackToRow(pack: Omit<Pack, 'id'>): Omit<PackRow, 'id'> {
     return {
       store_id: pack.storeId,
       store_name: pack.storeName,
@@ -85,8 +101,8 @@ export class SupabasePackRepository implements PackRepository {
       .select()
       .single();
 
-    if (error) {
-      throw new Error(`Error al actualizar stock: ${error.message}`);
+    if (error || !data) {
+      throw new Error(error?.message || 'Error al actualizar stock');
     }
 
     return this.mapRowToPack(data);
@@ -105,8 +121,8 @@ export class SupabasePackRepository implements PackRepository {
       .select()
       .single();
 
-    if (error) {
-      throw new Error(`Error al agregar pack: ${error.message}`);
+    if (error || !data) {
+      throw new Error(error?.message || 'Error al agregar pack');
     }
 
     return this.mapRowToPack(data);

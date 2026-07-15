@@ -1,13 +1,14 @@
 import type { PackRepository } from '../../domain/repositories/PackRepository';
 import type { Pack } from '../../domain/entities/Pack';
 import { INITIAL_MOCK_PACKS } from '../datasources/MockData';
+import { isBrowser } from '../helpers/env';
 
 export class LocalStoragePackRepository implements PackRepository {
   private getStoredPacks(): Pack[] {
-    if (typeof window === 'undefined') return INITIAL_MOCK_PACKS;
-    const data = localStorage.getItem('ceromerma_packs');
+    if (!isBrowser()) return INITIAL_MOCK_PACKS;
+    const data = localStorage.getItem('foodsave_packs');
     if (!data) {
-      localStorage.setItem('ceromerma_packs', JSON.stringify(INITIAL_MOCK_PACKS));
+      localStorage.setItem('foodsave_packs', JSON.stringify(INITIAL_MOCK_PACKS));
       return INITIAL_MOCK_PACKS;
     }
     try {
@@ -18,8 +19,8 @@ export class LocalStoragePackRepository implements PackRepository {
   }
 
   private savePacks(packs: Pack[]): void {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('ceromerma_packs', JSON.stringify(packs));
+    if (isBrowser()) {
+      localStorage.setItem('foodsave_packs', JSON.stringify(packs));
     }
   }
 

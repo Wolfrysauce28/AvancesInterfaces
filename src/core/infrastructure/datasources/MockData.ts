@@ -55,21 +55,23 @@ export const MOCK_SURVEY_QUESTIONS: SurveyQuestion[] = [
       { value: "pie", label: "Caminando", emoji: "👟" },
       { value: "bici", label: "Bicicleta o Vehículo Eléctrico", emoji: "🛴" },
       { value: "publico", label: "Transporte Público", emoji: "🚌" },
-      { value: "auto", label: "Automóvil / Moto particular", emoji: "🚗" }
+      { value: "auto", label: "Automóvil / Moto particular", emoji: "🚗" },
+      { value: "otro", label: "Otros medios", emoji: "🛸" }
     ]
   },
   {
     id: 5,
     block: "Perfil General",
     blockNum: 1,
-    title: "¿Cómo conociste CeroMerma?",
+    title: "¿Cómo conociste FoodSave?",
     desc: "Ayúdanos a entender dónde está nuestra comunidad.",
     type: "single",
     options: [
       { value: "social", label: "Redes Sociales", emoji: "📱" },
       { value: "recomendacion", label: "Recomendación de un amigo", emoji: "👥" },
       { value: "prensa", label: "Prensa o Publicaciones", emoji: "📰" },
-      { value: "local", label: "Visto directamente en un local", emoji: "🏪" }
+      { value: "local", label: "Visto directamente en un local", emoji: "🏪" },
+      { value: "otro", label: "Otros", emoji: "❓" }
     ]
   },
   // BLOQUE 2: PREFERENCIAS ALIMENTICIAS Y ALERGIAS
@@ -114,7 +116,8 @@ export const MOCK_SURVEY_QUESTIONS: SurveyQuestion[] = [
       { value: "platos_fuertes", label: "Platos Preparados / Menús", emoji: "🍲" },
       { value: "frutas_verduras", label: "Frutas y Verduras frescas", emoji: "🍎" },
       { value: "lacteos_embutidos", label: "Lácteos y Embutidos", emoji: "🧀" },
-      { value: "bebidas", label: "Jugos, Café y Bebidas", emoji: "🥤" }
+      { value: "bebidas", label: "Jugos, Café y Bebidas", emoji: "🥤" },
+      { value: "otros", label: "Otros / Sorpresa", emoji: "🎁" }
     ]
   },
   {
@@ -141,7 +144,8 @@ export const MOCK_SURVEY_QUESTIONS: SurveyQuestion[] = [
       { value: "desayuno", label: "Mañana (Desayuno/Brunch)", emoji: "☕" },
       { value: "almuerzo", label: "Mediodía (Almuerzo)", emoji: "🍱" },
       { value: "tarde", label: "Tarde (Meriendas)", emoji: "🍰" },
-      { value: "cena", label: "Noche (Cena/Cierre de locales)", emoji: "🍕" }
+      { value: "cena", label: "Noche (Cena/Cierre de locales)", emoji: "🍕" },
+      { value: "cualquiera", label: "Cualquier momento / Otros", emoji: "🕒" }
     ]
   },
   // BLOQUE 3: HÁBITOS Y MOTIVACIONES DE COMPRA
@@ -162,7 +166,7 @@ export const MOCK_SURVEY_QUESTIONS: SurveyQuestion[] = [
     id: 12,
     block: "Hábitos y Motivación",
     blockNum: 3,
-    title: "¿Cuál es tu principal motivación al usar CeroMerma?",
+    title: "¿Cuál es tu principal motivación al usar FoodSave?",
     desc: "Ajusta la prioridad en el contenido del feed.",
     type: "single",
     options: [

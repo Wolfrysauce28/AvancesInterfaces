@@ -1,12 +1,15 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import AuthGuard from '../components/common/AuthGuard';
 import AdminDashboard from '../components/admin/AdminDashboard';
 import ThemeToggle from '../components/common/ThemeToggle';
 ---
 
-<BaseLayout title="Panel de Control KDS" viewId="admin">
+<BaseLayout title="Panel KDS - FoodSave" viewId="admin" description="Panel de administración de inventario KDS para gestionar packs de comida y reducir merma.">
   <main id="app" class="max-w-7xl mx-auto w-full transition-all duration-300">
-    <AdminDashboard client:load />
+    <AuthGuard requiredRole="admin" client:idle>
+      <AdminDashboard client:idle />
+    </AuthGuard>
   </main>
-  <ThemeToggle client:load />
+  <ThemeToggle client:idle />
 </BaseLayout>

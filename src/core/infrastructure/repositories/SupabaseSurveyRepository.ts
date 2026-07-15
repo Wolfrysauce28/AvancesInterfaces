@@ -2,6 +2,7 @@ import type { SurveyRepository } from '../../domain/repositories/SurveyRepositor
 import type { SurveyQuestion, SurveyAnswers } from '../../domain/entities/Survey';
 import { MOCK_SURVEY_QUESTIONS } from '../datasources/MockData';
 import { supabase } from '../datasources/supabaseClient';
+import { isBrowser } from '../helpers/env';
 
 export class SupabaseSurveyRepository implements SurveyRepository {
   async getQuestions(): Promise<SurveyQuestion[]> {
@@ -10,11 +11,10 @@ export class SupabaseSurveyRepository implements SurveyRepository {
 
   async saveAnswers(answers: SurveyAnswers): Promise<void> {
     const { data: { session } } = await supabase.auth.getSession();
-    if (!session || !session.user) {
-      // Fallback a localStorage si no está autenticado
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('ceromerma_client_answers', JSON.stringify(answers));
-        localStorage.setItem('ceromerma_profile_completed', 'true');
+    if (!session?.user) {
+      if (isBrowser()) {
+        localStorage.setItem('foodsave_client_answers', JSON.stringify(answers));
+        localStorage.setItem('foodsave_profile_completed', 'true');
       }
       return;
     }
@@ -23,7 +23,7 @@ export class SupabaseSurveyRepository implements SurveyRepository {
       .from('surveys')
       .upsert({
         user_id: session.user.id,
-        answers: answers,
+        answers,
         completed: true,
         updated_at: new Date().toISOString(),
       });
@@ -32,17 +32,17 @@ export class SupabaseSurveyRepository implements SurveyRepository {
       throw new Error(`Error al guardar respuestas en Supabase: ${error.message}`);
     }
 
-    // Sincronizar localmente también para consistencia
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('ceromerma_profile_completed', 'true');
+    if (isBrowser()) {
+      localStorage.setItem(`foodsave_profile_completed_${session.user.id}`, 'true');
+      localStorage.setItem('foodsave_profile_completed', 'true');
     }
   }
 
   async getAnswers(): Promise<SurveyAnswers | null> {
     const { data: { session } } = await supabase.auth.getSession();
-    if (!session || !session.user) {
-      if (typeof window === 'undefined') return null;
-      const localData = localStorage.getItem('ceromerma_client_answers');
+    if (!session?.user) {
+      if (!isBrowser()) return null;
+      const localData = localStorage.getItem('foodsave_client_answers');
       return localData ? JSON.parse(localData) as SurveyAnswers : null;
     }
 
@@ -58,9 +58,9 @@ export class SupabaseSurveyRepository implements SurveyRepository {
 
   async isCompleted(): Promise<boolean> {
     const { data: { session } } = await supabase.auth.getSession();
-    if (!session || !session.user) {
-      if (typeof window === 'undefined') return false;
-      return localStorage.getItem('ceromerma_profile_completed') === 'true';
+    if (!session?.user) {
+      if (!isBrowser()) return false;
+      return localStorage.getItem('foodsave_profile_completed') === 'true';
     }
 
     const { data, error } = await supabase
@@ -69,18 +69,29 @@ export class SupabaseSurveyRepository implements SurveyRepository {
       .eq('user_id', session.user.id)
       .single();
 
-    if (error || !data) return false;
-    return data.completed;
+    if (error) {
+      // Si el error es PGRST116 (no se encontró la fila en la tabla surveys), significa que es un usuario nuevo
+      if (error.code === 'PGRST116') {
+        return false;
+      }
+      // Para otros errores (ej. RLS o red), usamos el localStorage específico del usuario como plan B
+      if (isBrowser()) {
+        return localStorage.getItem(`foodsave_profile_completed_${session.user.id}`) === 'true';
+      }
+      return false;
+    }
+
+    return data ? data.completed : false;
   }
 
   async resetSurvey(): Promise<void> {
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('ceromerma_client_answers');
-      localStorage.removeItem('ceromerma_profile_completed');
+    if (isBrowser()) {
+      localStorage.removeItem('foodsave_client_answers');
+      localStorage.removeItem('foodsave_profile_completed');
     }
 
     const { data: { session } } = await supabase.auth.getSession();
-    if (session && session.user) {
+    if (session?.user) {
       await supabase
         .from('surveys')
         .delete()

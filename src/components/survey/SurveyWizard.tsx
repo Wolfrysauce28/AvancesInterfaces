@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import type { SurveyQuestion, SurveyAnswers } from '../../core/domain/entities/Survey';
 import { getSurveyQuestionsUseCase, saveSurveyAnswersUseCase } from '../../core/container';
+import { applyMutuallyExclusiveOption } from '../../core/domain/rules/surveyRules';
 
 export const SurveyWizard: React.FC = () => {
   const [questions, setQuestions] = useState<SurveyQuestion[]>([]);
   const [currentStep, setCurrentStep] = useState<number>(-1); // -1: inicio, >=0: preguntas, -2: fin
   const [answers, setAnswers] = useState<SurveyAnswers>({});
   const [loading, setLoading] = useState<boolean>(true);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   useEffect(() => {
     const loadQuestions = async () => {
@@ -42,25 +44,8 @@ export const SurveyWizard: React.FC = () => {
     if (type === 'single') {
       setAnswers(prev => ({ ...prev, [questionId]: value }));
     } else {
-      let newSelection: string[] = Array.isArray(currentAnswer) ? [...currentAnswer] : [];
-      
-      const index = newSelection.indexOf(value);
-      if (index > -1) {
-        newSelection.splice(index, 1);
-      } else {
-        // Regla específica del prototipo: si seleccionan 'ninguna' (alergias), limpiar el resto
-        if (value === 'ninguna') {
-          newSelection = ['ninguna'];
-        } else {
-          // Eliminar 'ninguna' si seleccionan otra cosa
-          const noneIndex = newSelection.indexOf('ninguna');
-          if (noneIndex > -1) {
-            newSelection.splice(noneIndex, 1);
-          }
-          newSelection.push(value);
-        }
-      }
-      
+      const current: string[] = Array.isArray(currentAnswer) ? [...currentAnswer] : [];
+      const newSelection = applyMutuallyExclusiveOption(current, value);
       setAnswers(prev => ({ ...prev, [questionId]: newSelection }));
     }
   };
@@ -76,12 +61,14 @@ export const SurveyWizard: React.FC = () => {
     if (currentStep < questions.length - 1) {
       setCurrentStep(prev => prev + 1);
     } else {
-      // Guardar respuestas usando el caso de uso
+      setIsSubmitting(true);
       try {
         await saveSurveyAnswersUseCase.execute(answers);
         setCurrentStep(-2); // Ir a la pantalla final
       } catch (err) {
-        console.error('Error al guardar respuestas:', err);
+        console.error('Error al guardar respuestas:', err instanceof Error ? err.message : err);
+      } finally {
+        setIsSubmitting(false);
       }
     }
   };
@@ -114,11 +101,11 @@ export const SurveyWizard: React.FC = () => {
     return (
       <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 w-full max-w-[680px] rounded-3xl shadow-xl dark:shadow-black/30 p-8 md:p-10 text-center flex flex-col items-center justify-center min-h-[580px] mx-auto my-12 animate-show">
         <div className="text-6xl mb-6 animate-bounce duration-1000">🥗</div>
-        <h1 className="font-display text-gray-900 dark:text-white text-3xl md:text-4xl font-extrabold mb-4 leading-tight">Bienvenido a CeroMerma</h1>
+        <h1 className="font-display text-gray-900 dark:text-white text-3xl md:text-4xl font-extrabold mb-4 leading-tight">Bienvenido a FoodSave</h1>
         <p className="font-body text-gray-500 dark:text-gray-400 max-w-[480px] mb-8 text-sm md:text-base leading-relaxed">
           Completa este breve cuestionario interactivo de registro (20 preguntas) para personalizar tu experiencia, descubrir las mejores ofertas en tu zona y definir tu perfil de Rescatador de Alimentos.
         </p>
-        <button onClick={startSurvey} className="btn-primary text-white font-bold py-4 px-10 rounded-2xl shadow-lg active:scale-95 transition-all text-base md:text-lg">
+        <button onClick={startSurvey} className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold py-4 px-10 rounded-2xl shadow-lg hover:shadow-xl hover:-translate-y-1 active:scale-95 active:translate-y-0 transition-all duration-300 text-base md:text-lg">
           Comenzar Registro 🚀
         </button>
       </div>
@@ -138,17 +125,15 @@ export const SurveyWizard: React.FC = () => {
         <div className="w-full max-h-[280px] overflow-y-auto border border-gray-100 dark:border-gray-700 rounded-2xl p-4 mb-6 bg-gray-50 dark:bg-gray-900 text-left hide-scrollbar">
           {questions.map((q) => {
             const ans = answers[q.id];
-            let answerLabel = '';
-            
-            if (Array.isArray(ans)) {
-              answerLabel = ans.map(val => {
-                const opt = q.options.find(o => o.value === val);
-                return opt ? `${opt.emoji} ${opt.label}` : val;
-              }).join(", ");
-            } else {
-              const opt = q.options.find(o => o.value === ans);
-              answerLabel = opt ? `${opt.emoji} ${opt.label}` : (ans as string || 'Sin responder');
-            }
+            const answerLabel = Array.isArray(ans)
+              ? ans.map(val => {
+                  const opt = q.options.find(o => o.value === val);
+                  return opt ? `${opt.emoji} ${opt.label}` : val;
+                }).join(", ")
+              : (() => {
+                  const opt = q.options.find(o => o.value === ans);
+                  return opt ? `${opt.emoji} ${opt.label}` : (ans as string || 'Sin responder');
+                })();
 
             return (
               <div key={q.id} className="py-2.5 border-b border-gray-100 dark:border-gray-800 last:border-none">
@@ -159,11 +144,11 @@ export const SurveyWizard: React.FC = () => {
           })}
         </div>
 
-        <div className="flex gap-4 w-full">
-          <button onClick={restartSurvey} className="flex-1 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-white font-bold py-4 px-6 rounded-2xl transition active:scale-95 text-sm md:text-base">
+        <div className="flex flex-col sm:flex-row gap-4 w-full mt-4">
+          <button onClick={restartSurvey} className="flex-1 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-white font-bold py-4 px-6 rounded-2xl transition-all duration-300 hover:shadow-md active:scale-95 text-sm md:text-base">
             Volver a empezar
           </button>
-          <button onClick={finishSurvey} className="flex-2 btn-primary text-white font-bold py-4 px-8 rounded-2xl shadow-lg active:scale-95 transition text-sm md:text-base">
+          <button onClick={finishSurvey} className="flex-[2] bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold py-4 px-8 rounded-2xl shadow-lg hover:shadow-xl hover:-translate-y-1 active:scale-95 active:translate-y-0 transition-all duration-300 text-sm md:text-base">
             Completar y Entrar a la App 🍃
           </button>
         </div>
@@ -231,10 +216,14 @@ export const SurveyWizard: React.FC = () => {
         </button>
         <button 
           onClick={nextQuestion} 
-          disabled={!hasAnswer(currentQuestion.id)}
-          className="btn-primary text-white font-bold py-3.5 px-8 rounded-2xl shadow-md active:scale-95 disabled:opacity-40 disabled:transform-none disabled:shadow-none disabled:cursor-not-allowed cursor-pointer transition flex items-center gap-2 text-sm md:text-base"
+          disabled={!hasAnswer(currentQuestion.id) || isSubmitting}
+          className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold py-3.5 px-8 rounded-2xl shadow-md hover:shadow-lg hover:-translate-y-0.5 active:scale-95 active:translate-y-0 disabled:opacity-40 disabled:transform-none disabled:shadow-none disabled:cursor-not-allowed cursor-pointer transition-all duration-300 flex items-center gap-2 text-sm md:text-base"
         >
-          {currentStep === questions.length - 1 ? 'Finalizar Registro 🏁' : 'Siguiente →'}
+          {isSubmitting ? (
+             <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> Procesando...</>
+          ) : (
+            currentStep === questions.length - 1 ? 'Finalizar Registro 🏁' : 'Siguiente →'
+          )}
         </button>
       </div>
     </div>

@@ -1,12 +1,15 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import AuthGuard from '../components/common/AuthGuard';
 import ClientDashboard from '../components/client/ClientDashboard';
 import ThemeToggle from '../components/common/ThemeToggle';
 ---
 
-<BaseLayout title="Portal de Rescate" viewId="home">
+<BaseLayout title="Portal de Rescate - FoodSave" viewId="home" description="Explora packs sorpresa con descuentos de hasta 70% en restaurantes y tiendas cerca de ti.">
   <main id="app" class="max-w-7xl mx-auto w-full transition-all duration-300">
-    <ClientDashboard client:load />
+    <AuthGuard requiredRole="client" client:idle>
+      <ClientDashboard client:idle />
+    </AuthGuard>
   </main>
-  <ThemeToggle client:load />
+  <ThemeToggle client:idle />
 </BaseLayout>
