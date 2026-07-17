@@ -15,14 +15,6 @@ export default defineConfig({
     build: {
       minify: 'esbuild',
       cssMinify: true,
-      rollupOptions: {
-        output: {
-          manualChunks: {
-            'vendor-react': ['react', 'react-dom'],
-            'vendor-supabase': ['@supabase/supabase-js'],
-          }
-        }
-      }
     }
   }
 });
