@@ -196,7 +196,7 @@ export const LoginContainer: React.FC = () => {
       <div className={`container-login relative bg-white dark:bg-gray-800 rounded-[24px] shadow-2xl dark:shadow-black/50 overflow-hidden w-[900px] max-w-full min-h-[600px] transition-all duration-500 ${isRightActive ? 'right-panel-active' : ''}`} id="container">
         
         {/* FORMULARIO: ADMINISTRADOR / RESTAURANTE */}
-        <div className={`form-container absolute top-0 h-full w-full md:w-1/2 transition-all duration-600 ease-in-out flex flex-col justify-center items-center px-10 bg-white dark:bg-gray-800 ${isRightActive ? 'translate-x-0 opacity-100 z-50 animate-show' : 'translate-x-full opacity-0 z-10'}`}>
+        <div className={`form-container absolute top-0 h-full w-full md:w-1/2 transition-all duration-600 ease-in-out flex flex-col justify-center items-center px-10 bg-white dark:bg-gray-800 ${isRightActive ? 'translate-x-0 md:translate-x-full opacity-100 z-50 animate-show' : 'translate-x-0 opacity-0 z-10 pointer-events-none'}`}>
           <form onSubmit={handleAdminLogin} className="w-full max-w-xs flex flex-col items-center">
             {/* Logo interno para móvil */}
             <div className="flex items-center gap-2 mb-4 md:hidden">
@@ -256,7 +256,7 @@ export const LoginContainer: React.FC = () => {
         </div>
 
         {/* FORMULARIO: CLIENTE */}
-        <div className={`form-container absolute top-0 h-full w-full md:w-1/2 transition-all duration-600 ease-in-out flex flex-col justify-center items-center px-10 bg-white dark:bg-gray-800 ${isRightActive ? '-translate-x-full opacity-0 z-10' : 'translate-x-0 z-20'}`}>
+        <div className={`form-container absolute top-0 h-full w-full md:w-1/2 transition-all duration-600 ease-in-out flex flex-col justify-center items-center px-10 bg-white dark:bg-gray-800 ${isRightActive ? 'translate-x-0 md:translate-x-full opacity-0 z-10 pointer-events-none' : 'translate-x-0 opacity-100 z-20'}`}>
           <form onSubmit={handleClientLogin} className="w-full max-w-xs flex flex-col items-center">
             {/* Logo interno para móvil */}
             <div className="flex items-center gap-2 mb-4 md:hidden">
