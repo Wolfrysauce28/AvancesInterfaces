@@ -7,8 +7,8 @@ import ThemeToggle from '../components/common/ThemeToggle';
 
 <BaseLayout title="Portal de Rescate - FoodSave" viewId="home" description="Explora packs sorpresa con descuentos de hasta 70% en restaurantes y tiendas cerca de ti.">
   <main id="app" class="max-w-7xl mx-auto w-full transition-all duration-300">
-    <AuthGuard requiredRole="client" client:idle>
-      <ClientDashboard client:idle />
+    <AuthGuard requiredRole="client" client:load>
+      <ClientDashboard client:load />
     </AuthGuard>
   </main>
   <ThemeToggle client:idle />

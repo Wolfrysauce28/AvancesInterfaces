@@ -6,8 +6,23 @@ import vercel from '@astrojs/vercel';
 // https://astro.build/config
 export default defineConfig({
   adapter: vercel(),
+  compressHTML: true,
   integrations: [
     react(),
     tailwind()
-  ]
+  ],
+  vite: {
+    build: {
+      minify: 'esbuild',
+      cssMinify: true,
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            'vendor-react': ['react', 'react-dom'],
+            'vendor-supabase': ['@supabase/supabase-js'],
+          }
+        }
+      }
+    }
+  }
 });

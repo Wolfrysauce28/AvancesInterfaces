@@ -578,7 +578,7 @@ export const ClientDashboard: React.FC = () => {
                 <div className="text-center py-16 space-y-4">
                   <div className="text-5xl animate-bounce-in">🛒</div>
                   <p className="font-bold text-gray-500 dark:text-gray-400">Tu carrito está vacío</p>
-                  <p className="text-xs text-gray-400 dark:text-gray-500 max-w-[200px] mx-auto">Explora el menú y agrega packs para rescatar comida deliciosa</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 max-w-[200px] mx-auto">Explora el menú y agrega packs para rescatar comida deliciosa</p>
                 </div>
               ) : (
                 cart.map(item => (
@@ -636,7 +636,7 @@ export const ClientDashboard: React.FC = () => {
             onClick={e => e.stopPropagation()}
           >
             <div className="p-3 border-b border-gray-100 dark:border-gray-700">
-              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Seleccionar ubicación</p>
+              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Seleccionar ubicación</p>
             </div>
             {PRESET_LOCATIONS.map(loc => (
               <button
@@ -898,7 +898,7 @@ export const ClientDashboard: React.FC = () => {
             <div className="text-center py-16 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-3xl">
               <div className="text-5xl mb-4 animate-bounce-in">📋</div>
               <p className="font-bold text-gray-500 dark:text-gray-400">Aún no tienes pedidos</p>
-              <p className="text-xs text-gray-400 dark:text-gray-500 mt-2 max-w-[250px] mx-auto">Explora el menú y reserva tu primer pack para comenzar a rescatar comida</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 max-w-[250px] mx-auto">Explora el menú y reserva tu primer pack para comenzar a rescatar comida</p>
               <button onClick={handleBackToHome} className="mt-6 btn-primary text-white font-bold py-3 px-6 rounded-xl shadow-md transition active:scale-95 text-sm">
                 Explorar Packs
               </button>
@@ -934,7 +934,7 @@ export const ClientDashboard: React.FC = () => {
 
                       <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-50 dark:border-gray-700">
                         <span className="text-emerald-600 dark:text-emerald-400 font-extrabold text-lg">${(res.pack.discountedPrice * res.quantity).toFixed(2)}</span>
-                        <span className="text-[10px] text-gray-400">{new Date(res.timestamp).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</span>
+                        <span className="text-[10px] text-gray-500">{new Date(res.timestamp).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</span>
                       </div>
                     </div>
                   </div>

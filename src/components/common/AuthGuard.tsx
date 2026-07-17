@@ -39,7 +39,7 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({ requiredRole, children }) 
       <div className="flex justify-center items-center min-h-[60vh]">
         <div className="flex flex-col items-center gap-4">
           <div className="w-12 h-12 border-4 border-emerald-200 dark:border-gray-700 border-t-emerald-500 rounded-full animate-spin"></div>
-          <p className="text-sm font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Verificando acceso...</p>
+          <p className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Verificando acceso...</p>
         </div>
       </div>
     );
