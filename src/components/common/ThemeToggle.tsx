@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
-
-function getInitialTheme(): 'light' | 'dark' {
-  if (typeof document === 'undefined') return 'light';
-  return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
-}
+import React, { useState, useEffect } from 'react';
 
 export const ThemeToggle: React.FC = () => {
-  const [theme, setTheme] = useState<'light' | 'dark'>(getInitialTheme);
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+
+  // Ajustar el tema correcto en el cliente tras el montaje, evitando el hydration mismatch
+  useEffect(() => {
+    const isDark = document.documentElement.classList.contains('dark');
+    setTheme(isDark ? 'dark' : 'light');
+  }, []);
 
   const toggleTheme = () => {
     const newTheme = theme === 'light' ? 'dark' : 'light';
