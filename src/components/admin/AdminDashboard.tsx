@@ -256,14 +256,20 @@ export const AdminDashboard: React.FC = () => {
         </div>
       ) : (
         <div className="space-y-4">
-          {filteredPacks.map((pack) => (
+          {filteredPacks.map((pack, index) => (
             <div 
               key={pack.id} 
               className={`bg-white dark:bg-gray-800 rounded-2xl p-4 md:p-5 border border-gray-100 dark:border-gray-700 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4 hover:border-gray-200 dark:hover:border-gray-600 transition ${pack.stock === 0 ? 'opacity-70' : ''}`}
             >
               <div className="flex items-center gap-4">
                 <div className={`w-16 h-16 md:w-20 md:h-20 rounded-xl bg-gray-100 dark:bg-gray-700 overflow-hidden flex-shrink-0 ${pack.stock === 0 ? 'grayscale' : ''}`}>
-                  <img src={pack.imageUrl} alt={pack.name} loading="lazy" className="w-full h-full object-cover" />
+                  <img
+                    src={pack.imageUrl}
+                    alt={pack.name}
+                    loading={index === 0 ? 'eager' : 'lazy'}
+                    fetchPriority={index === 0 ? 'high' : 'auto'}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
                 <div>
                   <h4 className="font-extrabold text-gray-900 dark:text-white text-base md:text-lg font-display">{pack.name}</h4>

@@ -6,7 +6,7 @@ import ThemeToggle from '../components/common/ThemeToggle';
 ---
 
 <BaseLayout title="Panel KDS - FoodSave" viewId="admin" description="Panel de administración de inventario KDS para gestionar packs de comida y reducir merma.">
-  <main id="app" class="max-w-7xl mx-auto w-full transition-all duration-300">
+  <main id="app" class="w-full transition-all duration-300">
     <AuthGuard requiredRole="admin" client:idle>
       <AdminDashboard client:idle />
     </AuthGuard>
